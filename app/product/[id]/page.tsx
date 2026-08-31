@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ActivityFeed from "@/components/feed/ActivityFeed";
-import { formatINR, formatNumber, getSpotScoreColor } from "@/lib/utils";
+import { formatINR, formatNumber } from "@/lib/utils";
 import type { ActivityEvent, Product } from "@/lib/types";
-import { TrendingUp, MousePointerClick, Eye, Shield, Tag, Globe } from "lucide-react";
+import { ExternalLink, TrendingUp, MousePointerClick, Eye, ArrowLeft } from "lucide-react";
 import VisitButton from "@/components/product/VisitButton";
 
 interface ProductPageProps {
@@ -34,7 +34,6 @@ async function getProductData(id: string) {
 
   if (error || !product) return null;
 
-  // Get recent activity for this product
   const { data: rawEvents } = await supabase
     .from("activity_events")
     .select("*")
@@ -81,156 +80,185 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!data) notFound();
 
   const { product, events } = data;
-
   if (product.status === "banned") notFound();
 
-  // Auth check for attack button
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const isOwner = user?.id === product.founder_id;
 
   const positions = product.board_positions || [];
-  const topPos = positions.reduce((best, bp) =>
-    !best || bp.position < best.position ? bp : best, positions[0]
+  const topPos = positions.reduce(
+    (best, bp) => (!best || bp.position < best.position ? bp : best),
+    positions[0]
   );
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-[#0C0C0C]">
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start gap-6 mb-8">
-          {/* Logo */}
-          <div className="w-20 h-20 rounded-2xl bg-bg-elevated border border-bg-border flex items-center justify-center font-black text-3xl text-accent-purple flex-shrink-0 overflow-hidden">
-            {product.logo_url ? (
-              <img src={product.logo_url} alt={product.name} className="w-full h-full object-cover" />
-            ) : (
-              product.name.charAt(0)
-            )}
-          </div>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-16">
 
-          <div className="flex-1">
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-              <div>
-                <h1 className="font-display font-black text-3xl sm:text-4xl text-white">{product.name}</h1>
-                <p className="text-slate-400 text-lg mt-1">{product.tagline}</p>
-                <div className="flex items-center gap-3 mt-2 flex-wrap">
-                  <span className="px-2 py-0.5 rounded-lg bg-bg-elevated border border-bg-border text-xs text-slate-400">
-                    {product.category}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-lg bg-bg-elevated border border-bg-border text-xs text-slate-400">
-                    {product.pricing}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-lg bg-bg-elevated border border-bg-border text-xs text-slate-400">
-                    {product.country}
-                  </span>
+        {/* Back link */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs text-[#555555] hover:text-[#CCCCCC] transition-colors mb-6"
+        >
+          <ArrowLeft className="w-3 h-3" />
+          Back to Live Board
+        </Link>
+
+        {/* Product header */}
+        <div className="border-b border-[#1A1A1A] pb-6 mb-6">
+          <div className="flex flex-col sm:flex-row items-start gap-5">
+            {/* Logo */}
+            <div className="w-16 h-16 rounded border border-[#242424] bg-[#181818] flex items-center justify-center font-bold text-2xl text-[#E85D27] flex-shrink-0 overflow-hidden">
+              {product.logo_url ? (
+                <img
+                  src={product.logo_url}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                product.name.charAt(0)
+              )}
+            </div>
+
+            <div className="flex-1">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                  <h1 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight">
+                    {product.name}
+                  </h1>
+                  <p className="text-[#666666] text-base mt-1">{product.tagline}</p>
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <span className="badge">{product.category}</span>
+                    <span className="badge">{product.pricing}</span>
+                    <span className="badge">{product.country}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {isOwner && (
-                  <Link href="/dashboard" className="px-4 py-2 rounded-xl bg-accent-purple/20 text-accent-purple-light text-sm font-medium border border-accent-purple/30 hover:bg-accent-purple/30 transition-all">
-                    Your Product
-                  </Link>
-                )}
-                <VisitButton productId={product.id} url={product.url} />
+                <div className="flex items-center gap-2">
+                  {isOwner && (
+                    <Link
+                      href="/dashboard"
+                      className="px-3 py-1.5 rounded-sm border border-[#2A2A2A] text-[#E85D27] text-xs font-medium hover:bg-[#181818] transition-all"
+                    >
+                      Your Product
+                    </Link>
+                  )}
+                  <VisitButton productId={product.id} url={product.url} />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        {/* Stats row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[#1A1A1A] border border-[#1A1A1A] rounded-sm overflow-hidden mb-6">
           {[
             {
-              icon: <Shield className="w-4 h-4 text-accent-gold" />,
               label: "Board Rank",
               value: topPos ? `#${topPos.position}` : "—",
               sub: topPos?.board?.name || "not ranked",
-              accent: true,
+              highlight: !!topPos,
             },
             {
-              icon: <TrendingUp className="w-4 h-4 text-accent-purple" />,
               label: "SpotScore",
               value: `${product.spot_score.toFixed(0)}/100`,
               sub: "attention score",
+              highlight: false,
             },
             {
-              icon: <MousePointerClick className="w-4 h-4 text-accent-blue" />,
               label: "Clicks",
               value: formatNumber(product.click_count),
               sub: "outbound clicks",
+              highlight: false,
             },
             {
-              icon: <Eye className="w-4 h-4 text-accent-emerald" />,
               label: "Impressions",
               value: formatNumber(product.impression_count),
               sub: "board views",
+              highlight: false,
             },
           ].map((stat) => (
-            <div key={stat.label} className={`glass rounded-xl border p-4 ${stat.accent ? "border-accent-gold/20 bg-accent-gold/5" : "border-bg-border"}`}>
-              <div className="flex items-center gap-2 mb-1">
-                {stat.icon}
-                <span className="text-xs text-slate-500 uppercase tracking-wide">{stat.label}</span>
+            <div
+              key={stat.label}
+              className={`px-4 py-4 ${stat.highlight ? "bg-[#181818]" : "bg-[#111111]"}`}
+            >
+              <div className="text-[10px] uppercase tracking-wider text-[#444444] mb-1 font-semibold">
+                {stat.label}
               </div>
-              <div className={`font-display font-bold text-2xl ${stat.accent ? "text-accent-gold" : "text-white"}`}>
+              <div
+                className={`stat-value text-xl ${
+                  stat.highlight ? "text-[#D4A017]" : "text-[#F0F0F0]"
+                }`}
+              >
                 {stat.value}
               </div>
-              <div className="text-xs text-slate-600 mt-0.5">{stat.sub}</div>
+              <div className="text-[10px] text-[#3A3A3A] mt-0.5">{stat.sub}</div>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content */}
-          <div className="lg:col-span-2 space-y-5">
+          {/* Main */}
+          <div className="lg:col-span-2 space-y-4">
+
             {/* Description */}
             {product.description && (
-              <div className="glass rounded-2xl border border-bg-border p-5">
-                <h2 className="font-display font-bold text-white mb-3">About</h2>
-                <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{product.description}</p>
+              <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
+                <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">About</h2>
+                <p className="text-[#AAAAAA] text-sm leading-relaxed whitespace-pre-wrap">
+                  {product.description}
+                </p>
               </div>
             )}
 
             {/* Board Positions */}
             {positions.length > 0 && (
-              <div className="glass rounded-2xl border border-bg-border p-5">
-                <h2 className="font-display font-bold text-white mb-4">Competing On</h2>
-                <div className="space-y-2">
-                  {positions.map((bp) => bp.board && (
-                    <Link
-                      key={bp.board.id}
-                      href={`/board?board=${bp.board.slug}`}
-                      className="flex items-center justify-between p-3 rounded-xl bg-bg-elevated border border-bg-border hover:border-accent-purple/40 transition-all"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span>{bp.board.icon}</span>
-                        <span className="text-white font-medium text-sm">{bp.board.name}</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="text-white font-bold text-sm">#{bp.position}</div>
-                          <div className="text-xs text-slate-600">rank</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-white font-bold text-sm">{formatINR(bp.spend_on_board, true)}</div>
-                          <div className="text-xs text-slate-600">spend</div>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
+              <div className="border border-[#1A1A1A] rounded-sm overflow-hidden bg-[#111111]">
+                <div className="px-5 py-3 border-b border-[#1A1A1A]">
+                  <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider">Competing On</h2>
+                </div>
+                <div>
+                  {positions.map(
+                    (bp) =>
+                      bp.board && (
+                        <Link
+                          key={bp.board.id}
+                          href={`/board?board=${bp.board.slug}`}
+                          className="flex items-center justify-between px-5 py-3 border-b border-[#1A1A1A] last:border-b-0 hover:bg-[#181818] transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{bp.board.icon}</span>
+                            <span className="text-sm text-[#CCCCCC]">{bp.board.name}</span>
+                          </div>
+                          <div className="flex items-center gap-6 text-right">
+                            <div>
+                              <div className="text-sm font-semibold text-white num">#{bp.position}</div>
+                              <div className="text-[10px] text-[#444444]">rank</div>
+                            </div>
+                            <div>
+                              <div className="text-sm font-semibold text-white num">
+                                {formatINR(bp.spend_on_board, true)}
+                              </div>
+                              <div className="text-[10px] text-[#444444]">spend</div>
+                            </div>
+                          </div>
+                        </Link>
+                      )
+                  )}
                 </div>
               </div>
             )}
 
             {/* Tags */}
             {product.tags && product.tags.length > 0 && (
-              <div className="glass rounded-2xl border border-bg-border p-5">
-                <h2 className="font-display font-bold text-white mb-3 flex items-center gap-2">
-                  <Tag className="w-4 h-4" /> Tags
-                </h2>
-                <div className="flex flex-wrap gap-2">
+              <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
+                <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">Tags</h2>
+                <div className="flex flex-wrap gap-1.5">
                   {product.tags.map((tag) => (
-                    <span key={tag} className="px-3 py-1 rounded-full bg-bg-elevated border border-bg-border text-slate-400 text-xs">
+                    <span key={tag} className="badge">
                       {tag}
                     </span>
                   ))}
@@ -241,37 +269,46 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {/* Spend info */}
-            <div className="glass rounded-2xl border border-bg-border p-5">
-              <h3 className="font-display font-bold text-white mb-3">Attention Budget</h3>
-              <div className="text-3xl font-display font-black text-white mb-1">
+
+            {/* Attention budget */}
+            <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
+              <h3 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">
+                Attention Budget
+              </h3>
+              <div className="stat-value text-2xl text-white mb-0.5">
                 {formatINR(product.total_spend, true)}
               </div>
-              <p className="text-xs text-slate-500 mb-4">total spent competing</p>
-              <div className="text-xs text-slate-600 p-2 rounded-lg bg-bg-elevated border border-bg-border">
-                💡 Sponsored position — rank reflects spend, not quality
-              </div>
+              <p className="text-[10px] text-[#444444] mb-3">total spent competing</p>
+              <p className="text-[10px] text-[#3A3A3A] leading-relaxed border-t border-[#1A1A1A] pt-3">
+                Sponsored position — rank reflects spend, not quality or endorsement.
+              </p>
             </div>
 
             {/* Founder info */}
             {(product.founder_name || product.company_name) && (
-              <div className="glass rounded-2xl border border-bg-border p-5">
-                <h3 className="font-display font-bold text-white mb-3">Made by</h3>
-                <p className="text-white font-medium">{product.company_name || product.founder_name}</p>
+              <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
+                <h3 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">Made by</h3>
+                <p className="text-sm text-white font-medium">
+                  {product.company_name || product.founder_name}
+                </p>
                 {product.founder_name && product.company_name && (
-                  <p className="text-slate-400 text-sm mt-0.5">{product.founder_name}</p>
+                  <p className="text-xs text-[#555555] mt-0.5">{product.founder_name}</p>
                 )}
               </div>
             )}
 
             {/* Activity */}
-            <div className="glass rounded-2xl border border-bg-border p-5">
-              <h3 className="font-display font-bold text-white mb-3">Activity</h3>
-              {events.length === 0 ? (
-                <p className="text-slate-500 text-sm">No activity yet.</p>
-              ) : (
-                <ActivityFeed initialEvents={events.slice(0, 8)} compact={false} />
-              )}
+            <div className="border border-[#1A1A1A] rounded-sm overflow-hidden bg-[#111111]">
+              <div className="px-5 py-3 border-b border-[#1A1A1A]">
+                <h3 className="text-xs font-semibold text-[#888888] uppercase tracking-wider">Activity</h3>
+              </div>
+              <div className="p-4">
+                {events.length === 0 ? (
+                  <p className="text-[#444444] text-xs">No activity yet.</p>
+                ) : (
+                  <ActivityFeed initialEvents={events.slice(0, 8)} compact={false} />
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -3,8 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { TrendingUp, TrendingDown, Minus, ExternalLink, Swords } from "lucide-react";
-import { formatINR, formatNumber, getMovement } from "@/lib/utils";
+import { ExternalLink, Swords } from "lucide-react";
+import { formatINR, formatNumber } from "@/lib/utils";
 import type { BoardEntry } from "@/lib/types";
 import AttackModal from "@/components/battle/AttackModal";
 
@@ -21,27 +21,33 @@ interface ProductRowProps {
 function MovementBadge({ movement }: { movement: number }) {
   if (movement > 0) {
     return (
-      <span className="flex items-center gap-0.5 text-emerald-400 text-xs font-semibold">
-        <TrendingUp className="w-3 h-3" />↑{movement}
+      <span className="move-up text-xs num">
+        ↑{movement}
       </span>
     );
   }
   if (movement < 0) {
     return (
-      <span className="flex items-center gap-0.5 text-red-400 text-xs font-semibold">
-        <TrendingDown className="w-3 h-3" />↓{Math.abs(movement)}
+      <span className="move-down text-xs num">
+        ↓{Math.abs(movement)}
       </span>
     );
   }
-  return <span className="text-slate-600 text-xs"><Minus className="w-3 h-3 inline" /></span>;
+  return <span className="move-flat text-xs">—</span>;
 }
 
-function RankBadge({ position }: { position: number }) {
-  if (position === 1) return <span className="text-2xl font-display font-black rank-1">🥇</span>;
-  if (position === 2) return <span className="text-2xl font-display font-black rank-2">🥈</span>;
-  if (position === 3) return <span className="text-2xl font-display font-black rank-3">🥉</span>;
+function RankNumber({ position }: { position: number }) {
+  const cls =
+    position === 1
+      ? "rank-gold"
+      : position === 2
+      ? "rank-silver"
+      : position === 3
+      ? "rank-bronze"
+      : "rank-default";
+
   return (
-    <span className="text-base font-display font-bold text-slate-400 w-8 text-center">
+    <span className={`text-sm num font-display ${cls}`}>
       #{position}
     </span>
   );
@@ -56,7 +62,7 @@ export default function ProductRow({
   userProductIds = [],
   onAttackSuccess,
 }: ProductRowProps) {
-  const { product, position, previous_position, spend_on_board, movement } = entry;
+  const { product, position, spend_on_board, movement } = entry;
   const [showAttack, setShowAttack] = useState(false);
   const [justMoved, setJustMoved] = useState<"up" | "down" | null>(null);
   const prevPositionRef = useRef(position);
@@ -65,7 +71,7 @@ export default function ProductRow({
     if (prevPositionRef.current !== position) {
       const dir = position < prevPositionRef.current ? "up" : "down";
       setJustMoved(dir);
-      const t = setTimeout(() => setJustMoved(null), 700);
+      const t = setTimeout(() => setJustMoved(null), 600);
       prevPositionRef.current = position;
       return () => clearTimeout(t);
     }
@@ -74,103 +80,120 @@ export default function ProductRow({
   const isOwner = userProductIds.includes(product.id);
   const canAttack = isAuthenticated && !isOwner;
 
-  const rowBg = justMoved === "up"
-    ? "bg-emerald-500/10"
-    : justMoved === "down"
-    ? "bg-red-500/10"
-    : "";
+  const flashClass =
+    justMoved === "up"
+      ? "row-flash-up"
+      : justMoved === "down"
+      ? "row-flash-down"
+      : "";
 
   return (
     <>
       <div
-        className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border border-bg-border card-hover group transition-all duration-500 ${rowBg} ${
-          position <= 3 ? "bg-bg-elevated" : "bg-bg-surface/50"
-        }`}
+        className={`board-row group ${flashClass}`}
         id={`product-row-${product.id}`}
       >
-        {/* Rank */}
-        <div className="w-10 flex-shrink-0 flex justify-center">
-          <RankBadge position={position} />
+        {/* Rank — fixed width */}
+        <div className="w-12 flex-shrink-0 text-right pr-3">
+          <RankNumber position={position} />
         </div>
 
-        {/* Logo */}
-        <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-xl overflow-hidden bg-bg-elevated border border-bg-border">
+        {/* Logo — small */}
+        <div className="w-8 h-8 flex-shrink-0 rounded overflow-hidden bg-[#181818] border border-[#242424] mr-3">
           {product.logo_url ? (
             <Image
               src={product.logo_url}
               alt={product.name}
-              width={48}
-              height={48}
+              width={32}
+              height={32}
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-lg font-bold text-accent-purple">
-              {product.name.charAt(0)}
+            <div className="w-full h-full flex items-center justify-center text-xs font-bold text-[#E85D27]">
+              {product.name.charAt(0).toUpperCase()}
             </div>
           )}
         </div>
 
-        {/* Product Info */}
-        <div className="flex-1 min-w-0">
+        {/* Product info — flex-1 */}
+        <div className="flex-1 min-w-0 mr-4">
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               href={`/product/${product.id}`}
-              className="font-display font-semibold text-white hover:text-accent-purple-light transition-colors truncate text-sm sm:text-base"
+              className="text-sm font-semibold text-[#F0F0F0] hover:text-white transition-colors truncate"
             >
               {product.name}
             </Link>
-            <span className="hidden sm:inline text-xs px-1.5 py-0.5 rounded-md bg-bg-elevated text-slate-500 border border-bg-border">
+            <span className="hidden sm:inline badge">
               {product.category}
             </span>
           </div>
-          <p className="text-slate-400 text-xs sm:text-sm truncate mt-0.5">{product.tagline}</p>
+          <p className="text-[#555555] text-xs truncate mt-0.5 max-w-[340px]">
+            {product.tagline}
+          </p>
         </div>
 
-        {/* Stats */}
-        <div className="hidden sm:flex items-center gap-6 flex-shrink-0">
-          <div className="text-right">
-            <div className="text-white font-semibold text-sm">{formatINR(spend_on_board, true)}</div>
-            <div className="text-slate-500 text-xs">spend</div>
+        {/* Stats columns — desktop only */}
+        <div className="hidden md:flex items-center gap-8 flex-shrink-0 mr-4">
+          {/* Attention / Spend */}
+          <div className="text-right w-20">
+            <div className="text-sm font-semibold text-[#E0E0E0] num">
+              {formatINR(spend_on_board, true)}
+            </div>
+            <div className="text-[#444444] text-[10px] uppercase tracking-wide">attention</div>
           </div>
-          <div className="text-right">
-            <div className="text-white font-semibold text-sm">{formatNumber(product.click_count)}</div>
-            <div className="text-slate-500 text-xs">clicks</div>
-          </div>
+
+          {/* Movement */}
           <div className="text-right w-10">
+            <MovementBadge movement={movement} />
+          </div>
+
+          {/* Clicks */}
+          <div className="text-right w-16">
+            <div className="text-sm font-semibold text-[#E0E0E0] num">
+              {formatNumber(product.click_count)}
+            </div>
+            <div className="text-[#444444] text-[10px] uppercase tracking-wide">clicks</div>
+          </div>
+        </div>
+
+        {/* Mobile stats — compact */}
+        <div className="flex md:hidden items-center gap-4 flex-shrink-0 mr-3">
+          <div className="text-right">
+            <div className="text-xs font-semibold text-[#E0E0E0] num">{formatINR(spend_on_board, true)}</div>
             <MovementBadge movement={movement} />
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <a
             href={product.url}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => {
-              // Fire click tracking
               fetch(`/api/clicks/${product.id}`, { method: "POST" }).catch(() => {});
             }}
-            className="p-2 rounded-lg text-slate-500 hover:text-white hover:bg-bg-elevated transition-all"
+            className="p-1.5 rounded-sm text-[#444444] hover:text-[#CCCCCC] hover:bg-[#181818] transition-all"
             title={`Visit ${product.name}`}
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-3.5 h-3.5" />
           </a>
 
           {canAttack && (
             <button
               onClick={() => setShowAttack(true)}
-              className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg attack-btn text-white text-xs sm:text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all"
+              className="flex items-center gap-1 px-2 py-1 rounded-sm attack-btn text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity"
               title={`Attack #${position}`}
               id={`attack-btn-${product.id}`}
             >
-              <Swords className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">⚔️ Attack</span>
+              <Swords className="w-3 h-3" />
+              <span className="hidden sm:inline">Attack</span>
             </button>
           )}
 
           {isOwner && (
-            <span className="px-2 py-1 rounded-lg bg-accent-purple/20 text-accent-purple-light text-xs font-medium border border-accent-purple/30">
+            <span className="px-2 py-0.5 rounded-sm bg-[#1A1A1A] text-[#E85D27] text-xs font-medium border border-[#2A2A2A]">
               Yours
             </span>
           )}

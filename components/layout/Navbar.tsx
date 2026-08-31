@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Sword, Bell, Menu, X, ChevronDown, Zap } from "lucide-react";
+import { Menu, X, Swords } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const navLinks = [
-  { href: "/board", label: "Live Board" },
-  { href: "/board?tab=ai-ml", label: "AI" },
-  { href: "/board?tab=saas", label: "SaaS" },
-  { href: "/battles", label: "⚔️ Battles" },
+  { href: "/", label: "Live Board", exact: true },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/battles", label: "Battles" },
+  { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/activity", label: "Activity" },
+  { href: "/for-founders", label: "For Founders" },
 ];
 
 export default function Navbar() {
@@ -30,7 +32,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => setScrolled(window.scrollY > 4);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -42,39 +44,45 @@ export default function Navbar() {
     router.refresh();
   };
 
+  const isActive = (href: string, exact?: boolean) => {
+    if (exact) return pathname === href;
+    return pathname.startsWith(href);
+  };
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-150 ${
         scrolled
-          ? "glass border-b border-bg-border shadow-lg shadow-black/20"
-          : "bg-transparent"
+          ? "bg-[#0C0C0C] border-b border-[#1A1A1A]"
+          : "bg-[#0C0C0C]/95"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14">
+
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-purple to-accent-red flex items-center justify-center shadow-lg shadow-accent-purple/30 group-hover:shadow-accent-purple/50 transition-shadow">
-                <Sword className="w-4 h-4 text-white" />
-              </div>
-              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent-red rounded-full live-dot" />
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-7 h-7 border border-[#2A2A2A] rounded flex items-center justify-center bg-[#181818]">
+              <Swords className="w-3.5 h-3.5 text-[#E85D27]" />
             </div>
-            <span className="font-display font-bold text-xl text-white">
-              Spot<span className="text-gradient-purple">Wars</span>
+            <span className="font-display font-bold text-lg text-white tracking-tight">
+              SpotWars
+            </span>
+            <span className="hidden sm:flex items-center gap-1 ml-1">
+              <span className="live-dot" />
             </span>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-0.5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  pathname === link.href
-                    ? "bg-accent-purple/20 text-accent-purple-light"
-                    : "text-slate-400 hover:text-white hover:bg-bg-elevated"
+                className={`px-3 py-1.5 text-sm font-medium transition-colors rounded-sm ${
+                  isActive(link.href, link.exact)
+                    ? "text-white bg-[#181818]"
+                    : "text-[#777777] hover:text-[#CCCCCC]"
                 }`}
               >
                 {link.label}
@@ -82,30 +90,23 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Right Side */}
-          <div className="flex items-center gap-3">
+          {/* Right side */}
+          <div className="flex items-center gap-2">
             {user ? (
               <>
-                <button
-                  className="relative p-2 rounded-lg text-slate-400 hover:text-white hover:bg-bg-elevated transition-all"
-                  title="Notifications"
-                >
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-accent-red rounded-full" />
-                </button>
                 <Link
                   href="/dashboard"
-                  className={`hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`hidden sm:block text-sm font-medium transition-colors px-3 py-1.5 rounded-sm ${
                     pathname.startsWith("/dashboard")
-                      ? "bg-accent-purple text-white"
-                      : "text-slate-300 hover:text-white hover:bg-bg-elevated"
+                      ? "text-white bg-[#181818]"
+                      : "text-[#777777] hover:text-white"
                   }`}
                 >
                   Dashboard
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="hidden sm:block text-sm text-slate-500 hover:text-slate-300 transition-colors"
+                  className="hidden sm:block text-sm text-[#555555] hover:text-[#999999] transition-colors"
                 >
                   Sign out
                 </button>
@@ -113,7 +114,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/auth/login"
-                className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block"
+                className="hidden sm:block text-sm text-[#666666] hover:text-[#CCCCCC] transition-colors"
               >
                 Sign in
               </Link>
@@ -122,17 +123,17 @@ export default function Navbar() {
             <Link
               href="/submit"
               id="nav-submit-btn"
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent-purple hover:bg-accent-purple-light text-white text-sm font-semibold transition-all shadow-lg shadow-accent-purple/25 hover:shadow-accent-purple/40"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm btn-primary text-sm font-semibold"
             >
-              <Zap className="w-4 h-4" />
-              <span className="hidden sm:inline">List Product</span>
+              <span className="hidden sm:inline">List Your Product</span>
               <span className="sm:hidden">List</span>
             </Link>
 
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-bg-elevated transition-all"
+              className="lg:hidden p-1.5 rounded-sm text-[#777777] hover:text-white hover:bg-[#181818] transition-all"
+              aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -142,26 +143,32 @@ export default function Navbar() {
 
       {/* Mobile Nav */}
       {mobileOpen && (
-        <div className="md:hidden glass border-t border-bg-border animate-fade-in">
-          <div className="max-w-7xl mx-auto px-4 py-3 space-y-1">
+        <div className="lg:hidden border-t border-[#1A1A1A] bg-[#0C0C0C] animate-fade-in">
+          <div className="max-w-7xl mx-auto px-4 py-3 space-y-0.5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-bg-elevated transition-all"
+                className={`block px-3 py-2 text-sm font-medium transition-colors rounded-sm ${
+                  isActive(link.href, link.exact)
+                    ? "text-white bg-[#181818]"
+                    : "text-[#777777] hover:text-white"
+                }`}
               >
                 {link.label}
               </Link>
             ))}
-            {user ? (
-              <>
-                <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-bg-elevated">Dashboard</Link>
-                <button onClick={handleSignOut} className="block w-full text-left px-3 py-2 rounded-lg text-sm text-slate-500 hover:text-slate-300">Sign out</button>
-              </>
-            ) : (
-              <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-bg-elevated">Sign in</Link>
-            )}
+            <div className="border-t border-[#1A1A1A] mt-2 pt-2 space-y-0.5">
+              {user ? (
+                <>
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-3 py-2 text-sm text-[#777777] hover:text-white rounded-sm">Dashboard</Link>
+                  <button onClick={handleSignOut} className="block w-full text-left px-3 py-2 text-sm text-[#555555] hover:text-[#999999] rounded-sm">Sign out</button>
+                </>
+              ) : (
+                <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="block px-3 py-2 text-sm text-[#777777] hover:text-white rounded-sm">Sign in</Link>
+              )}
+            </div>
           </div>
         </div>
       )}

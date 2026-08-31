@@ -3,8 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import ProductRow from "./ProductRow";
-import { Radio, RefreshCw } from "lucide-react";
-import type { BoardEntry, Product, BoardPosition } from "@/lib/types";
+import { RefreshCw } from "lucide-react";
+import type { BoardEntry, Product } from "@/lib/types";
 
 interface LiveBoardProps {
   boardId: string;
@@ -29,7 +29,7 @@ export default function LiveBoard({
   const [isLive, setIsLive] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
-  // Use useRef to avoid creating supabase client during SSR/prerender
+
   const supabaseRef = typeof window !== "undefined" ? createClient() : null;
   const supabase = supabaseRef!;
 
@@ -53,12 +53,14 @@ export default function LiveBoard({
       .limit(limit);
 
     if (data) {
-      const mapped: BoardEntry[] = (data as unknown as Array<{
-        position: number;
-        previous_position?: number;
-        spend_on_board: number;
-        product: Product;
-      }>).map((row) => ({
+      const mapped: BoardEntry[] = (
+        data as unknown as Array<{
+          position: number;
+          previous_position?: number;
+          spend_on_board: number;
+          product: Product;
+        }>
+      ).map((row) => ({
         position: row.position,
         previous_position: row.previous_position,
         spend_on_board: row.spend_on_board,
@@ -72,7 +74,6 @@ export default function LiveBoard({
   }, [boardId, limit, supabase]);
 
   useEffect(() => {
-    // Subscribe to realtime board position changes
     const channel = supabase
       .channel(`board:${boardId}-${Math.random().toString(36).substring(7)}`)
       .on(
@@ -103,35 +104,65 @@ export default function LiveBoard({
   });
 
   return (
-    <div>
+    <div className="border border-[#1A1A1A] rounded-sm overflow-hidden">
+      {/* Optional board sub-header */}
       {showHeader && (
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#1A1A1A] bg-[#111111]">
           <div className="flex items-center gap-2">
-            <div className={`live-dot ${isLive ? "bg-red-500" : "bg-slate-600"}`} />
-            <span className="font-display font-bold text-white text-lg">
-              {isLive ? "🔴 LIVE BOARD" : "BOARD"}
+            <div
+              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                isLive ? "bg-[#EF4444]" : "bg-[#333333]"
+              }`}
+            />
+            <span className="text-xs font-semibold text-[#888888] uppercase tracking-wide">
+              {isLive ? "Live" : "Board"}
             </span>
-            <span suppressHydrationWarning className="text-slate-500 text-xs">Updated {lastUpdateStr}</span>
+            <span suppressHydrationWarning className="text-[#3A3A3A] text-xs">
+              · updated {lastUpdateStr}
+            </span>
           </div>
           <button
             onClick={fetchBoard}
             disabled={isRefreshing}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-bg-elevated text-slate-400 hover:text-white text-sm transition-all hover:bg-bg-border disabled:opacity-50"
+            className="flex items-center gap-1 text-[#555555] hover:text-[#CCCCCC] text-xs transition-colors disabled:opacity-40"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
             Refresh
           </button>
         </div>
       )}
 
+      {/* Column headers */}
+      <div className="hidden md:flex items-center px-4 py-2 border-b border-[#1A1A1A] bg-[#0E0E0E]">
+        <div className="w-12 flex-shrink-0 text-right pr-3">
+          <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">#</span>
+        </div>
+        <div className="w-8 flex-shrink-0 mr-3" />
+        <div className="flex-1 mr-4">
+          <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Product</span>
+        </div>
+        <div className="flex items-center gap-8 flex-shrink-0 mr-4">
+          <div className="text-right w-20">
+            <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Attention</span>
+          </div>
+          <div className="text-right w-10">
+            <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Move</span>
+          </div>
+          <div className="text-right w-16">
+            <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Clicks</span>
+          </div>
+        </div>
+        <div className="w-16 flex-shrink-0" />
+      </div>
+
+      {/* Board rows */}
       {entries.length === 0 ? (
-        <div className="text-center py-16 text-slate-500">
-          <Radio className="w-12 h-12 mx-auto mb-4 opacity-30" />
-          <p className="font-display text-lg">No products on this board yet.</p>
-          <p className="text-sm mt-1">Be the first to stake your claim!</p>
+        <div className="text-center py-16 text-[#444444]">
+          <p className="text-sm">No products on this board yet.</p>
+          <p className="text-xs mt-1 text-[#333333]">Be the first to stake your claim.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div>
           {entries.map((entry, i) => (
             <ProductRow
               key={entry.product.id}

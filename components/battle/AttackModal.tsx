@@ -14,7 +14,6 @@ interface AttackModalProps {
   boardSlug: string;
   onClose: () => void;
   onSuccess: () => void;
-  // If attacker's product is provided
   attackerProductId?: string;
 }
 
@@ -30,9 +29,13 @@ export default function AttackModal({
   onSuccess,
   attackerProductId,
 }: AttackModalProps) {
-  const [step, setStep] = useState<ModalStep>(attackerProductId ? "confirm" : "select_product");
+  const [step, setStep] = useState<ModalStep>(
+    attackerProductId ? "confirm" : "select_product"
+  );
   const [userProducts, setUserProducts] = useState<Product[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState(attackerProductId || "");
+  const [selectedProductId, setSelectedProductId] = useState(
+    attackerProductId || ""
+  );
   const [error, setError] = useState("");
   const supabase = typeof window !== "undefined" ? createClient() : null;
 
@@ -59,11 +62,10 @@ export default function AttackModal({
     setError("");
 
     try {
-      // Load Razorpay
       const loaded = await loadRazorpay();
-      if (!loaded) throw new Error("Could not load payment gateway. Please try again.");
+      if (!loaded)
+        throw new Error("Could not load payment gateway. Please try again.");
 
-      // Create order
       const res = await fetch("/api/bids/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,14 +79,19 @@ export default function AttackModal({
       });
 
       const { order, bid_id, error: apiError } = await res.json();
-      if (apiError || !order) throw new Error(apiError || "Failed to create order");
+      if (apiError || !order)
+        throw new Error(apiError || "Failed to create order");
 
-      // Open Razorpay
       if (!supabase) throw new Error("Supabase not initialized");
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       await new Promise<void>((resolve, reject) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const RazorpayConstructor = (window as any).Razorpay as new (opts: Record<string, unknown>) => { open(): void };
+        const RazorpayConstructor = (window as any).Razorpay as new (
+          opts: Record<string, unknown>
+        ) => { open(): void };
         const rzp = new RazorpayConstructor({
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: order.amount,
@@ -93,9 +100,8 @@ export default function AttackModal({
           description: `Attack #${targetPosition} (${targetProduct.name})`,
           order_id: order.id,
           prefill: { email: user?.email || "" },
-          theme: { color: "#7C3AED" },
+          theme: { color: "#E85D27" },
           handler: async (response: RazorpayPaymentResponse) => {
-            // Verify payment
             const verifyRes = await fetch("/api/bids/verify", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -130,66 +136,89 @@ export default function AttackModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 animate-fade-in"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="glass-elevated rounded-2xl border border-bg-border w-full max-w-md shadow-2xl shadow-black/50 animate-slide-in-up">
+      <div className="bg-[#111111] border border-[#2A2A2A] rounded-sm w-full max-w-md shadow-2xl shadow-black/60 animate-slide-in-right">
+
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-bg-border">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-accent-red/20">
-              <Swords className="w-5 h-5 text-accent-red" />
-            </div>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1A1A1A]">
+          <div className="flex items-center gap-2.5">
+            <Swords className="w-4 h-4 text-[#EF4444]" />
             <div>
-              <h3 className="font-display font-bold text-white">⚔️ Attack Position</h3>
-              <p className="text-xs text-slate-500">Take #{targetPosition} from {targetProduct.name}</p>
+              <h3 className="font-display font-semibold text-white text-sm">
+                Attack Position
+              </h3>
+              <p className="text-xs text-[#555555]">
+                Take #{targetPosition} from {targetProduct.name}
+              </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg text-slate-500 hover:text-white hover:bg-bg-elevated transition-all">
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-sm text-[#555555] hover:text-white hover:bg-[#1A1A1A] transition-all"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="p-5">
           {/* Target info */}
-          <div className="flex items-center justify-between p-4 rounded-xl bg-bg-elevated border border-bg-border mb-5">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#181818] border border-[#242424] rounded-sm mb-5">
             <div>
-              <p className="text-xs text-slate-500 mb-0.5">Target</p>
-              <p className="font-semibold text-white">#{targetPosition} · {targetProduct.name}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{targetProduct.tagline}</p>
+              <p className="text-[10px] text-[#444444] uppercase tracking-wide mb-0.5">Target</p>
+              <p className="text-sm font-semibold text-white">
+                #{targetPosition} · {targetProduct.name}
+              </p>
+              <p className="text-xs text-[#666666] mt-0.5 truncate max-w-[200px]">
+                {targetProduct.tagline}
+              </p>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500 mb-0.5">Current spend</p>
-              <p className="font-bold text-accent-gold">{formatINR(targetSpend)}</p>
+            <div className="text-right flex-shrink-0">
+              <p className="text-[10px] text-[#444444] uppercase tracking-wide mb-0.5">
+                Current spend
+              </p>
+              <p className="text-sm font-bold text-[#D4A017] num">
+                {formatINR(targetSpend)}
+              </p>
             </div>
           </div>
 
-          {/* Step: Select product */}
+          {/* Select product */}
           {step === "select_product" && (
             <div>
-              <p className="text-sm text-slate-400 mb-3">Select which of your products will attack:</p>
+              <p className="text-xs text-[#888888] mb-3">
+                Select which of your products will attack:
+              </p>
               {userProducts.length === 0 ? (
-                <div className="text-center py-6 text-slate-500 text-sm">
+                <div className="text-center py-6 text-[#444444] text-xs">
                   You need an active product on this board to attack.
                   <br />
-                  <a href="/submit" className="text-accent-purple-light underline mt-2 inline-block">List your product →</a>
+                  <a
+                    href="/submit"
+                    className="text-[#E85D27] hover:text-[#D44E1E] underline mt-2 inline-block transition-colors"
+                  >
+                    List your product →
+                  </a>
                 </div>
               ) : (
-                <div className="space-y-2 mb-4">
+                <div className="space-y-1.5 mb-4">
                   {userProducts.map((p) => (
                     <button
                       key={p.id}
                       onClick={() => setSelectedProductId(p.id)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
+                      className={`w-full flex items-center gap-3 p-3 border rounded-sm transition-all text-left ${
                         selectedProductId === p.id
-                          ? "border-accent-purple bg-accent-purple/10"
-                          : "border-bg-border bg-bg-elevated hover:border-accent-purple/50"
+                          ? "border-[#E85D27] bg-[#E85D2710]"
+                          : "border-[#242424] bg-[#181818] hover:border-[#3A3A3A]"
                       }`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-bg-border flex items-center justify-center font-bold text-accent-purple text-sm flex-shrink-0">
+                      <div className="w-7 h-7 rounded bg-[#242424] flex items-center justify-center font-bold text-[#E85D27] text-xs flex-shrink-0">
                         {p.name.charAt(0)}
                       </div>
-                      <span className="text-white text-sm font-medium">{p.name}</span>
+                      <span className="text-[#CCCCCC] text-sm font-medium">
+                        {p.name}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -197,70 +226,83 @@ export default function AttackModal({
               <button
                 onClick={() => selectedProductId && setStep("confirm")}
                 disabled={!selectedProductId}
-                className="w-full py-3 rounded-xl bg-accent-red hover:bg-red-500 text-white font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2.5 rounded-sm btn-primary text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Continue
               </button>
             </div>
           )}
 
-          {/* Step: Confirm */}
+          {/* Confirm */}
           {step === "confirm" && (
             <div>
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 mb-5">
-                <AlertTriangle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                <p className="text-xs text-yellow-300">
-                  You are about to spend <strong>{formatINR(attackCost)}</strong> to take #{targetPosition}.
-                  This payment is non-refundable.
+              <div className="flex items-start gap-2.5 p-3 bg-[#1A1200] border border-[#3A2A00] rounded-sm mb-5">
+                <AlertTriangle className="w-4 h-4 text-[#D4A017] flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-[#AAAAAA]">
+                  You are about to spend{" "}
+                  <strong className="text-white">{formatINR(attackCost)}</strong> to take
+                  #{targetPosition}. This payment is non-refundable.
                 </p>
               </div>
 
-              <div className="flex items-center justify-between mb-5">
-                <span className="text-slate-400 text-sm">Cost to attack</span>
-                <span className="font-display font-bold text-2xl text-white">{formatINR(attackCost)}</span>
+              <div className="flex items-center justify-between mb-5 py-3 border-t border-[#1A1A1A] border-b">
+                <span className="text-[#888888] text-sm">Cost to attack</span>
+                <span className="font-display font-bold text-2xl text-white num">
+                  {formatINR(attackCost)}
+                </span>
               </div>
 
               <button
                 onClick={handleAttack}
-                className="w-full py-3.5 rounded-xl attack-btn text-white font-bold font-display text-lg transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-sm attack-btn text-sm font-bold flex items-center justify-center gap-2"
                 id="confirm-attack-btn"
               >
-                <Swords className="w-5 h-5" />
-                ⚔️ Take #{targetPosition} — {formatINR(attackCost)}
+                <Swords className="w-4 h-4" />
+                Take #{targetPosition} — {formatINR(attackCost)}
               </button>
-              <button onClick={() => setStep(attackerProductId ? "confirm" : "select_product")} className="w-full mt-2 py-2 text-sm text-slate-500 hover:text-slate-300 transition-colors">
+              <button
+                onClick={() =>
+                  setStep(attackerProductId ? "confirm" : "select_product")
+                }
+                className="w-full mt-2 py-2 text-xs text-[#444444] hover:text-[#888888] transition-colors"
+              >
                 Cancel
               </button>
             </div>
           )}
 
-          {/* Step: Paying */}
+          {/* Paying */}
           {step === "paying" && (
-            <div className="text-center py-6">
-              <Loader2 className="w-10 h-10 animate-spin text-accent-purple mx-auto mb-3" />
-              <p className="text-white font-medium">Processing payment...</p>
-              <p className="text-slate-400 text-sm mt-1">Complete the payment to attack the position</p>
+            <div className="text-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-[#E85D27] mx-auto mb-3" />
+              <p className="text-[#CCCCCC] text-sm font-medium">Processing payment...</p>
+              <p className="text-[#555555] text-xs mt-1">
+                Complete the payment to attack the position
+              </p>
             </div>
           )}
 
-          {/* Step: Success */}
+          {/* Success */}
           {step === "success" && (
-            <div className="text-center py-6">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-              <p className="text-white font-bold text-lg">Attack successful!</p>
-              <p className="text-slate-400 text-sm mt-1">The board is updating...</p>
+            <div className="text-center py-8">
+              <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
+              <p className="text-white font-semibold">Attack successful!</p>
+              <p className="text-[#555555] text-xs mt-1">The board is updating...</p>
             </div>
           )}
 
-          {/* Step: Error */}
+          {/* Error */}
           {step === "error" && (
             <div>
               <div className="text-center py-4 mb-4">
-                <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-2" />
-                <p className="text-white font-medium">Payment failed</p>
-                <p className="text-slate-400 text-sm mt-1">{error}</p>
+                <AlertTriangle className="w-8 h-8 text-[#EF4444] mx-auto mb-2" />
+                <p className="text-[#CCCCCC] text-sm font-medium">Payment failed</p>
+                <p className="text-[#555555] text-xs mt-1">{error}</p>
               </div>
-              <button onClick={() => setStep("confirm")} className="w-full py-3 rounded-xl bg-bg-elevated text-white font-semibold transition-all hover:bg-bg-border">
+              <button
+                onClick={() => setStep("confirm")}
+                className="w-full py-2.5 rounded-sm btn-secondary text-sm font-semibold"
+              >
                 Try Again
               </button>
             </div>
