@@ -8,9 +8,9 @@ import { formatINR } from "@/lib/utils";
 import type { ActivityEvent } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Battles — SpotWars",
+  title: "Battles — InternetBillboard.space",
   description:
-    "Live product battles on SpotWars. See which products are overtaking each other right now.",
+    "Live product battles on InternetBillboard.space. See which products are overtaking each other right now.",
 };
 
 async function getBattlesData() {
@@ -74,102 +74,104 @@ export default async function BattlesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0C0C0C]">
+    <div className="min-h-screen bg-bg text-ink">
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16">
 
         {/* Header */}
-        <div className="border-b border-[#1A1A1A] pb-6 mb-8">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="border-b border-bg-border pb-6 mb-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
             <span className="live-dot" />
-            <span className="text-xs text-[#555555] font-medium uppercase tracking-wider">Live competition</span>
+            <span className="text-xs text-ink font-bold uppercase tracking-widest">Live competition</span>
           </div>
-          <h1 className="font-display font-bold text-2xl text-white tracking-tight mb-1">
+          <h1 className="font-display font-black text-4xl sm:text-5xl text-ink tracking-tight mb-2 uppercase">
             Battles
           </h1>
-          <p className="text-[#555555] text-sm">
-            Products fighting for position on the live board.
+          <p className="text-ink-muted text-sm font-semibold uppercase tracking-widest">
+            Products fighting for position on the live board
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-10">
 
             {/* Live close matchups */}
             <div>
-              <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wider mb-4">
-                Close Matchups — Live Board
+              <h2 className="text-sm font-black text-ink uppercase tracking-widest border-b border-bg-border pb-2 mb-4">
+                Close Matchups
               </h2>
 
               {liveBattles.length === 0 ? (
-                <div className="border border-[#1A1A1A] rounded-sm py-12 text-center text-[#444444]">
+                <div className="border border-bg-border py-12 text-center text-ink font-bold uppercase tracking-wider">
                   <p className="text-sm">No close battles at the moment.</p>
-                  <p className="text-xs mt-1 text-[#333333]">
+                  <p className="text-xs mt-2 text-ink-muted">
                     When two products are within ₹10 of each other, they appear here.
                   </p>
                 </div>
               ) : (
-                <div className="border border-[#1A1A1A] rounded-sm overflow-hidden">
+                <div className="border border-bg-border bg-bg-surface">
                   {liveBattles.map(({ challenger, defender, gap }, i) => (
                     <div
                       key={`${challenger.product.id}-${defender.product.id}`}
-                      className={`p-4 ${i < liveBattles.length - 1 ? "border-b border-[#111111]" : ""}`}
+                      className={`p-5 ${i < liveBattles.length - 1 ? "border-b border-bg-border" : ""}`}
                     >
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[10px] text-[#444444] uppercase tracking-wider font-semibold">
+                      <div className="flex items-center justify-between mb-4 border-b border-bg-border pb-2">
+                        <span className="text-xs text-ink font-black uppercase tracking-widest">
                           Position #{defender.position} vs #{challenger.position}
                         </span>
                         {gap < 10000 && (
-                          <span className="badge text-[#EF4444] border-[#EF444430]">⚡ Very close</span>
+                          <span className="badge">⚡ Close</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
                         {/* Defender (current holder) */}
-                        <div className="flex-1 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded bg-[#181818] border border-[#242424] flex items-center justify-center text-xs font-bold text-[#E85D27] flex-shrink-0 overflow-hidden">
+                        <div className="flex-1 flex flex-col sm:flex-row items-center gap-3">
+                          <div className="w-10 h-10 border border-bg-border flex items-center justify-center text-sm font-black text-ink flex-shrink-0 bg-bg">
                             {defender.product.logo_url ? (
-                              <img src={defender.product.logo_url} alt={defender.product.name} className="w-full h-full object-cover" />
+                              <img src={defender.product.logo_url} alt={defender.product.name} className="w-full h-full object-cover grayscale opacity-90" />
                             ) : (
                               defender.product.name.charAt(0)
                             )}
                           </div>
                           <div className="min-w-0">
-                            <Link href={`/product/${defender.product.id}`} className="text-sm font-semibold text-white hover:text-[#CCCCCC] transition-colors truncate block">
+                            <Link href={`/product/${defender.product.id}`} className="text-sm font-bold text-ink hover:underline uppercase tracking-wide block">
                               {defender.product.name}
                             </Link>
-                            <div className="text-xs text-[#444444]">
+                            <div className="text-xs text-ink-muted font-bold uppercase tracking-wider">
                               #{defender.position} · {formatINR(defender.spend_on_board, true)}
                             </div>
                           </div>
                         </div>
 
                         {/* vs divider */}
-                        <div className="text-xs text-[#333333] font-semibold flex-shrink-0">vs</div>
+                        <div className="font-display font-black text-lg text-ink uppercase italic mx-4 flex-shrink-0">
+                          vs
+                        </div>
 
                         {/* Challenger */}
-                        <div className="flex-1 flex items-center gap-3 flex-row-reverse sm:flex-row">
-                          <div className="w-8 h-8 rounded bg-[#181818] border border-[#242424] flex items-center justify-center text-xs font-bold text-[#E85D27] flex-shrink-0 overflow-hidden">
+                        <div className="flex-1 flex flex-col sm:flex-row-reverse items-center gap-3 sm:text-right">
+                          <div className="w-10 h-10 border border-bg-border flex items-center justify-center text-sm font-black text-ink flex-shrink-0 bg-bg">
                             {challenger.product.logo_url ? (
-                              <img src={challenger.product.logo_url} alt={challenger.product.name} className="w-full h-full object-cover" />
+                              <img src={challenger.product.logo_url} alt={challenger.product.name} className="w-full h-full object-cover grayscale opacity-90" />
                             ) : (
                               challenger.product.name.charAt(0)
                             )}
                           </div>
                           <div className="min-w-0">
-                            <Link href={`/product/${challenger.product.id}`} className="text-sm font-semibold text-white hover:text-[#CCCCCC] transition-colors truncate block">
+                            <Link href={`/product/${challenger.product.id}`} className="text-sm font-bold text-ink hover:underline uppercase tracking-wide block">
                               {challenger.product.name}
                             </Link>
-                            <div className="text-xs text-[#444444]">
+                            <div className="text-xs text-ink-muted font-bold uppercase tracking-wider">
                               #{challenger.position} · {formatINR(challenger.spend_on_board, true)}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="mt-3 text-xs text-[#444444]">
-                        Gap: <span className="text-[#AAAAAA] num">{formatINR(gap, true)}</span>
+                      <div className="mt-4 pt-2 border-t border-bg-border text-xs text-ink-muted font-bold uppercase tracking-wider text-center">
+                        Gap: <span className="text-ink num">{formatINR(gap, true)}</span>
                         {" "}— {challenger.product.name} needs{" "}
-                        <span className="text-[#AAAAAA] num">{formatINR(gap + 100, true)}</span>
-                        {" "}more to overtake #{defender.position}
+                        <span className="text-ink num">{formatINR(gap + 100, true)}</span>
+                        {" "}more to overtake
                       </div>
                     </div>
                   ))}
@@ -179,15 +181,15 @@ export default async function BattlesPage() {
 
             {/* Recent overtakes */}
             <div>
-              <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wider mb-4">
+              <h2 className="text-sm font-black text-ink uppercase tracking-widest border-b border-bg-border pb-2 mb-4">
                 Recent Overtakes
               </h2>
               {overtakes.length === 0 ? (
-                <div className="border border-[#1A1A1A] rounded-sm py-10 text-center text-[#444444]">
+                <div className="border border-bg-border py-10 text-center text-ink-muted font-bold uppercase tracking-wider">
                   <p className="text-sm">No overtakes recorded yet.</p>
                 </div>
               ) : (
-                <div className="border border-[#1A1A1A] rounded-sm overflow-hidden">
+                <div className="border border-bg-border bg-bg-surface p-1">
                   <ActivityFeed initialEvents={overtakes} compact={false} />
                 </div>
               )}
@@ -195,40 +197,40 @@ export default async function BattlesPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Board positions 1-10 */}
             <div>
-              <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wider mb-3">
-                Current Top 10
+              <h2 className="text-sm font-black text-ink uppercase tracking-widest border-b border-bg-border pb-2 mb-4">
+                Top 10
               </h2>
-              <div className="border border-[#1A1A1A] rounded-sm overflow-hidden">
+              <div className="border border-bg-border bg-bg-surface">
                 {positions.slice(0, 10).map((pos, i) => (
                   <div
                     key={pos.product.id}
-                    className="flex items-center gap-3 px-4 py-2.5 border-b border-[#111111] last:border-b-0 hover:bg-[#141414] transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 border-b border-bg-border last:border-b-0 hover:bg-bg transition-colors"
                   >
                     <span
-                      className={`text-sm font-display font-bold num flex-shrink-0 w-6 text-right ${
+                      className={`text-sm font-display font-black num flex-shrink-0 w-6 text-right ${
                         i === 0
                           ? "rank-gold"
                           : i === 1
                           ? "rank-silver"
                           : i === 2
                           ? "rank-bronze"
-                          : "rank-default"
+                          : "text-ink"
                       }`}
                     >
                       #{pos.position}
                     </span>
                     <div className="flex-1 min-w-0">
                       <Link
-                        href={`/product/${pos.product.id}`}
-                        className="text-xs font-medium text-[#CCCCCC] hover:text-white transition-colors truncate block"
+                         href={`/product/${pos.product.id}`}
+                         className="text-xs font-bold text-ink uppercase tracking-wider truncate block"
                       >
                         {pos.product.name}
                       </Link>
                     </div>
-                    <span className="text-xs text-[#444444] num flex-shrink-0">
+                    <span className="text-xs font-bold text-ink-muted num flex-shrink-0">
                       {formatINR(pos.spend_on_board, true)}
                     </span>
                   </div>
@@ -237,15 +239,15 @@ export default async function BattlesPage() {
             </div>
 
             {/* CTA */}
-            <div className="border border-[#1A1A1A] rounded-sm p-4 bg-[#111111]">
-              <h3 className="text-sm font-semibold text-white mb-1.5">Want to battle?</h3>
-              <p className="text-xs text-[#555555] mb-4 leading-relaxed">
+            <div className="border border-bg-border p-5 bg-bg-elevated text-center">
+              <h3 className="font-display font-black text-lg text-ink uppercase tracking-tight mb-2">Want to battle?</h3>
+              <p className="text-xs font-bold text-ink-muted uppercase tracking-wider mb-5">
                 List your product and start competing. Attack any position above you.
               </p>
               <Link
                 href="/submit"
                 id="battles-submit-btn"
-                className="btn-primary w-full py-2 rounded-sm text-sm font-semibold text-center block"
+                className="btn-primary w-full py-2 block text-center"
               >
                 List Your Product
               </Link>

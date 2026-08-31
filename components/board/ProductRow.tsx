@@ -99,7 +99,7 @@ export default function ProductRow({
         </div>
 
         {/* Logo — small */}
-        <div className="w-8 h-8 flex-shrink-0 rounded overflow-hidden bg-[#181818] border border-[#242424] mr-3">
+        <div className="w-8 h-8 flex-shrink-0 bg-bg border border-bg-border mr-3">
           {product.logo_url ? (
             <Image
               src={product.logo_url}
@@ -109,7 +109,7 @@ export default function ProductRow({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-xs font-bold text-[#E85D27]">
+            <div className="w-full h-full flex items-center justify-center text-xs font-black text-ink">
               {product.name.charAt(0).toUpperCase()}
             </div>
           )}
@@ -120,7 +120,7 @@ export default function ProductRow({
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               href={`/product/${product.id}`}
-              className="text-sm font-semibold text-[#F0F0F0] hover:text-white transition-colors truncate"
+              className="text-sm font-black text-ink hover:text-ink-muted transition-colors truncate uppercase tracking-wide"
             >
               {product.name}
             </Link>
@@ -128,7 +128,7 @@ export default function ProductRow({
               {product.category}
             </span>
           </div>
-          <p className="text-[#555555] text-xs truncate mt-0.5 max-w-[340px]">
+          <p className="text-ink-muted text-xs truncate mt-0.5 max-w-[340px] font-bold uppercase tracking-wider">
             {product.tagline}
           </p>
         </div>
@@ -137,10 +137,10 @@ export default function ProductRow({
         <div className="hidden md:flex items-center gap-8 flex-shrink-0 mr-4">
           {/* Attention / Spend */}
           <div className="text-right w-20">
-            <div className="text-sm font-semibold text-[#E0E0E0] num">
+            <div className="text-sm font-black text-ink num">
               {formatINR(spend_on_board, true)}
             </div>
-            <div className="text-[#444444] text-[10px] uppercase tracking-wide">attention</div>
+            <div className="text-ink-muted text-[10px] uppercase tracking-wide font-bold">attention</div>
           </div>
 
           {/* Movement */}
@@ -150,17 +150,17 @@ export default function ProductRow({
 
           {/* Clicks */}
           <div className="text-right w-16">
-            <div className="text-sm font-semibold text-[#E0E0E0] num">
+            <div className="text-sm font-black text-ink num">
               {formatNumber(product.click_count)}
             </div>
-            <div className="text-[#444444] text-[10px] uppercase tracking-wide">clicks</div>
+            <div className="text-ink-muted text-[10px] uppercase tracking-wide font-bold">clicks</div>
           </div>
         </div>
 
         {/* Mobile stats — compact */}
         <div className="flex md:hidden items-center gap-4 flex-shrink-0 mr-3">
           <div className="text-right">
-            <div className="text-xs font-semibold text-[#E0E0E0] num">{formatINR(spend_on_board, true)}</div>
+            <div className="text-xs font-black text-ink num">{formatINR(spend_on_board, true)}</div>
             <MovementBadge movement={movement} />
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function ProductRow({
             onClick={() => {
               fetch(`/api/clicks/${product.id}`, { method: "POST" }).catch(() => {});
             }}
-            className="p-1.5 rounded-sm text-[#444444] hover:text-[#CCCCCC] hover:bg-[#181818] transition-all"
+            className="p-1.5 rounded-none text-ink-muted hover:text-ink hover:bg-bg-elevated transition-all border border-transparent hover:border-bg-border"
             title={`Visit ${product.name}`}
           >
             <ExternalLink className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export default function ProductRow({
           )}
 
           {isOwner && (
-            <span className="px-2 py-0.5 rounded-sm bg-[#1A1A1A] text-[#E85D27] text-xs font-medium border border-[#2A2A2A]">
+            <span className="px-2 py-0.5 rounded-none bg-ink text-bg text-[10px] font-black border border-bg-border uppercase tracking-widest">
               Yours
             </span>
           )}

@@ -64,10 +64,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   if (!data) return { title: "Product Not Found" };
   const { product } = data;
   return {
-    title: `${product.name} — SpotWars`,
+    title: `${product.name} — InternetBillboard.space`,
     description: product.tagline,
     openGraph: {
-      title: `${product.name} on SpotWars`,
+      title: `${product.name} on InternetBillboard.space`,
       description: product.tagline,
       images: product.logo_url ? [{ url: product.logo_url }] : [],
     },
@@ -95,53 +95,53 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
 
   return (
-    <div className="min-h-screen bg-[#0C0C0C]">
+    <div className="min-h-screen bg-bg text-ink">
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16">
 
         {/* Back link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs text-[#555555] hover:text-[#CCCCCC] transition-colors mb-6"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-ink hover:text-ink-muted transition-colors mb-6 uppercase tracking-wider"
         >
           <ArrowLeft className="w-3 h-3" />
           Back to Live Board
         </Link>
 
         {/* Product header */}
-        <div className="border-b border-[#1A1A1A] pb-6 mb-6">
-          <div className="flex flex-col sm:flex-row items-start gap-5">
+        <div className="border-b border-bg-border pb-8 mb-8">
+          <div className="flex flex-col sm:flex-row items-start gap-6">
             {/* Logo */}
-            <div className="w-16 h-16 rounded border border-[#242424] bg-[#181818] flex items-center justify-center font-bold text-2xl text-[#E85D27] flex-shrink-0 overflow-hidden">
+            <div className="w-20 h-20 border border-bg-border bg-bg flex items-center justify-center font-black text-3xl text-ink flex-shrink-0">
               {product.logo_url ? (
                 <img
                   src={product.logo_url}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover grayscale opacity-90"
                 />
               ) : (
                 product.name.charAt(0)
               )}
             </div>
 
-            <div className="flex-1">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1 w-full">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                  <h1 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight">
+                  <h1 className="font-display font-black text-4xl sm:text-5xl text-ink tracking-tight uppercase">
                     {product.name}
                   </h1>
-                  <p className="text-[#666666] text-base mt-1">{product.tagline}</p>
-                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <p className="text-ink-muted text-lg mt-2 font-bold uppercase tracking-wider leading-relaxed">{product.tagline}</p>
+                  <div className="flex items-center gap-2 mt-3 flex-wrap">
                     <span className="badge">{product.category}</span>
                     <span className="badge">{product.pricing}</span>
                     <span className="badge">{product.country}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                   {isOwner && (
                     <Link
                       href="/dashboard"
-                      className="px-3 py-1.5 rounded-sm border border-[#2A2A2A] text-[#E85D27] text-xs font-medium hover:bg-[#181818] transition-all"
+                      className="btn-secondary px-4 py-2"
                     >
                       Your Product
                     </Link>
@@ -154,7 +154,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-[#1A1A1A] border border-[#1A1A1A] rounded-sm overflow-hidden mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-0 border border-bg-border bg-bg mb-10">
           {[
             {
               label: "Board Rank",
@@ -180,35 +180,35 @@ export default async function ProductPage({ params }: ProductPageProps) {
               sub: "board views",
               highlight: false,
             },
-          ].map((stat) => (
+          ].map((stat, i, arr) => (
             <div
               key={stat.label}
-              className={`px-4 py-4 ${stat.highlight ? "bg-[#181818]" : "bg-[#111111]"}`}
+              className={`px-5 py-5 ${stat.highlight ? "bg-bg-surface" : "bg-bg"} ${i < arr.length - 1 ? "border-r border-bg-border" : ""} ${i === 1 && "max-sm:border-r-0"} border-b sm:border-b-0 border-bg-border last:border-b-0`}
             >
-              <div className="text-[10px] uppercase tracking-wider text-[#444444] mb-1 font-semibold">
+              <div className="text-[10px] font-black uppercase tracking-widest text-ink mb-2">
                 {stat.label}
               </div>
               <div
-                className={`stat-value text-xl ${
-                  stat.highlight ? "text-[#D4A017]" : "text-[#F0F0F0]"
+                className={`stat-value text-2xl ${
+                  stat.highlight ? "text-ink" : "text-ink"
                 }`}
               >
                 {stat.value}
               </div>
-              <div className="text-[10px] text-[#3A3A3A] mt-0.5">{stat.sub}</div>
+              <div className="text-[10px] text-ink-muted mt-1 font-bold uppercase tracking-wider">{stat.sub}</div>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-8">
 
             {/* Description */}
             {product.description && (
-              <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
-                <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">About</h2>
-                <p className="text-[#AAAAAA] text-sm leading-relaxed whitespace-pre-wrap">
+              <div className="border border-bg-border p-6 bg-bg-surface">
+                <h2 className="text-sm font-black text-ink uppercase tracking-widest mb-4 border-b border-bg-border pb-2">About</h2>
+                <p className="text-ink text-sm leading-relaxed whitespace-pre-wrap font-medium">
                   {product.description}
                 </p>
               </div>
@@ -216,9 +216,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {/* Board Positions */}
             {positions.length > 0 && (
-              <div className="border border-[#1A1A1A] rounded-sm overflow-hidden bg-[#111111]">
-                <div className="px-5 py-3 border-b border-[#1A1A1A]">
-                  <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider">Competing On</h2>
+              <div className="border border-bg-border overflow-hidden bg-bg-surface">
+                <div className="px-6 py-4 border-b border-bg-border">
+                  <h2 className="text-sm font-black text-ink uppercase tracking-widest">Competing On</h2>
                 </div>
                 <div>
                   {positions.map(
@@ -227,22 +227,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         <Link
                           key={bp.board.id}
                           href={`/board?board=${bp.board.slug}`}
-                          className="flex items-center justify-between px-5 py-3 border-b border-[#1A1A1A] last:border-b-0 hover:bg-[#181818] transition-colors"
+                          className="flex items-center justify-between px-6 py-4 border-b border-bg-border last:border-b-0 hover:bg-bg transition-colors"
                         >
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm">{bp.board.icon}</span>
-                            <span className="text-sm text-[#CCCCCC]">{bp.board.name}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg">{bp.board.icon}</span>
+                            <span className="text-sm font-bold text-ink uppercase tracking-wider">{bp.board.name}</span>
                           </div>
-                          <div className="flex items-center gap-6 text-right">
+                          <div className="flex items-center gap-8 text-right">
                             <div>
-                              <div className="text-sm font-semibold text-white num">#{bp.position}</div>
-                              <div className="text-[10px] text-[#444444]">rank</div>
+                              <div className="text-base font-black text-ink num">#{bp.position}</div>
+                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">rank</div>
                             </div>
                             <div>
-                              <div className="text-sm font-semibold text-white num">
+                              <div className="text-base font-black text-ink num">
                                 {formatINR(bp.spend_on_board, true)}
                               </div>
-                              <div className="text-[10px] text-[#444444]">spend</div>
+                              <div className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">spend</div>
                             </div>
                           </div>
                         </Link>
@@ -254,11 +254,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {/* Tags */}
             {product.tags && product.tags.length > 0 && (
-              <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
-                <h2 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">Tags</h2>
-                <div className="flex flex-wrap gap-1.5">
+              <div className="border border-bg-border p-6 bg-bg-surface">
+                <h2 className="text-sm font-black text-ink uppercase tracking-widest mb-4 border-b border-bg-border pb-2">Tags</h2>
+                <div className="flex flex-wrap gap-2">
                   {product.tags.map((tag) => (
-                    <span key={tag} className="badge">
+                    <span key={tag} className="badge bg-bg">
                       {tag}
                     </span>
                   ))}
@@ -268,43 +268,43 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
+          <div className="space-y-8">
 
             {/* Attention budget */}
-            <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
-              <h3 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">
+            <div className="border border-bg-border p-6 bg-bg-surface text-center">
+              <h3 className="text-sm font-black text-ink uppercase tracking-widest mb-4">
                 Attention Budget
               </h3>
-              <div className="stat-value text-2xl text-white mb-0.5">
+              <div className="stat-value text-3xl text-ink mb-1">
                 {formatINR(product.total_spend, true)}
               </div>
-              <p className="text-[10px] text-[#444444] mb-3">total spent competing</p>
-              <p className="text-[10px] text-[#3A3A3A] leading-relaxed border-t border-[#1A1A1A] pt-3">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mb-4">total spent competing</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink leading-relaxed border-t border-bg-border pt-4">
                 Sponsored position — rank reflects spend, not quality or endorsement.
               </p>
             </div>
 
             {/* Founder info */}
             {(product.founder_name || product.company_name) && (
-              <div className="border border-[#1A1A1A] rounded-sm p-5 bg-[#111111]">
-                <h3 className="text-xs font-semibold text-[#888888] uppercase tracking-wider mb-3">Made by</h3>
-                <p className="text-sm text-white font-medium">
+              <div className="border border-bg-border p-6 bg-bg-surface text-center">
+                <h3 className="text-sm font-black text-ink uppercase tracking-widest mb-4 border-b border-bg-border pb-2">Made by</h3>
+                <p className="text-base text-ink font-bold uppercase tracking-wider">
                   {product.company_name || product.founder_name}
                 </p>
                 {product.founder_name && product.company_name && (
-                  <p className="text-xs text-[#555555] mt-0.5">{product.founder_name}</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-ink-muted mt-1">{product.founder_name}</p>
                 )}
               </div>
             )}
 
             {/* Activity */}
-            <div className="border border-[#1A1A1A] rounded-sm overflow-hidden bg-[#111111]">
-              <div className="px-5 py-3 border-b border-[#1A1A1A]">
-                <h3 className="text-xs font-semibold text-[#888888] uppercase tracking-wider">Activity</h3>
+            <div className="border border-bg-border overflow-hidden bg-bg-surface">
+              <div className="px-6 py-4 border-b border-bg-border">
+                <h3 className="text-sm font-black text-ink uppercase tracking-widest">Recent Activity</h3>
               </div>
-              <div className="p-4">
+              <div className="p-2">
                 {events.length === 0 ? (
-                  <p className="text-[#444444] text-xs">No activity yet.</p>
+                  <p className="text-ink-muted font-bold uppercase tracking-widest text-xs text-center py-4">No activity yet.</p>
                 ) : (
                   <ActivityFeed initialEvents={events.slice(0, 8)} compact={false} />
                 )}

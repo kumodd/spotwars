@@ -46,8 +46,8 @@ export default function ActivityFeed({
     // Ticker tape mode
     const tickerItems = [...events, ...events];
     return (
-      <div className="bg-[#0E0E0E] border-b border-[#1A1A1A] py-2 overflow-hidden">
-        <div className="ticker-wrap">
+      <div className="bg-bg-surface border-b border-bg-border py-2 overflow-hidden">
+        <div className="ticker-wrap border-t border-b border-bg-border bg-bg-elevated">
           <div className="ticker-content">
             {tickerItems.map((event, i) => {
               const { emoji, text } = getEventDisplay(
@@ -59,13 +59,13 @@ export default function ActivityFeed({
               return (
                 <span
                   key={`${event.id}-${i}`}
-                  className="inline-flex items-center gap-2 mx-8 text-xs text-[#555555]"
+                  className="inline-flex items-center gap-2 mx-8 text-xs text-ink-muted font-bold uppercase tracking-wider"
                 >
                   <span>{emoji}</span>
-                  <span className="text-[#AAAAAA] font-medium">{productName}</span>
+                  <span className="text-ink font-black uppercase tracking-wide">{productName}</span>
                   <span>{text}</span>
-                  <span className="text-[#333333]">{timeAgo(event.created_at)}</span>
-                  <span className="text-[#222222] mx-1">·</span>
+                  <span className="text-ink-muted text-[10px]">{timeAgo(event.created_at)}</span>
+                  <span className="text-ink mx-1">·</span>
                 </span>
               );
             })}
@@ -79,7 +79,7 @@ export default function ActivityFeed({
   return (
     <div>
       {events.length === 0 && (
-        <p className="text-[#444444] text-xs text-center py-8">
+        <p className="text-ink-muted font-bold uppercase tracking-widest text-xs text-center py-8">
           Waiting for activity...
         </p>
       )}
@@ -90,15 +90,15 @@ export default function ActivityFeed({
         return (
           <div
             key={event.id}
-            className="flex items-start gap-3 py-3 border-b border-[#1A1A1A] last:border-b-0 animate-slide-in-right"
+            className="flex items-start gap-3 py-3 border-b border-bg-border last:border-b-0 animate-slide-in-right"
           >
             <span className="text-base flex-shrink-0 leading-none mt-0.5">{emoji}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-[#AAAAAA] leading-snug">
-                <span className="text-white font-medium">{productName}</span>{" "}
+              <p className="text-sm text-ink-muted font-bold uppercase tracking-wider leading-snug">
+                <span className="text-ink font-black uppercase tracking-wide">{productName}</span>{" "}
                 {text}
               </p>
-              <p className="text-xs text-[#444444] mt-0.5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mt-0.5">
                 {timeAgo(event.created_at)}
               </p>
             </div>

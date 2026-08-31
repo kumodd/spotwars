@@ -5,11 +5,11 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import LiveBoard from "@/components/board/LiveBoard";
 import ActivityFeed from "@/components/feed/ActivityFeed";
-import { formatINR, formatNumber } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils";
 import type { BoardEntry, ActivityEvent, Product } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "SpotWars — Live Internet Attention Market",
+  title: "InternetBillboard.space — Live Internet Attention Market",
   description:
     "Products competing for attention right now. Real-time rankings driven by spend, clicks, and momentum.",
 };
@@ -131,32 +131,32 @@ export default async function HomePage() {
   ] = await Promise.all([getHomepageData(), getAuthState()]);
 
   return (
-    <div className="min-h-screen bg-[#0C0C0C]">
+    <div className="min-h-screen bg-bg text-ink">
       <Navbar />
 
       {/* ── Status bar ── */}
-      <div className="status-bar pt-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between flex-wrap gap-3">
+      <div className="status-bar border-b border-bg-border bg-bg-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between flex-wrap gap-3 py-1">
           <div className="flex items-center gap-5 flex-wrap">
             <div className="flex items-center gap-2">
               <span className="live-dot" />
-              <span className="font-semibold text-[#CCCCCC] uppercase tracking-wide text-xs">Live</span>
+              <span className="font-bold text-ink uppercase tracking-wider text-xs">Live</span>
             </div>
             {stats && (
               <>
-                <span className="text-[#555555]">·</span>
-                <span className="num text-[#888888]">
-                  <span className="text-[#CCCCCC] font-semibold">{formatNumber(stats.products)}</span>{" "}
-                  products competing
+                <span className="text-ink">·</span>
+                <span className="num text-ink-muted text-xs font-semibold uppercase tracking-wider">
+                  <span className="text-ink font-bold">{formatNumber(stats.products)}</span>{" "}
+                  products
                 </span>
-                <span className="text-[#555555]">·</span>
-                <span className="num text-[#888888]">
-                  <span className="text-[#CCCCCC] font-semibold">{formatNumber(stats.movesToday)}</span>{" "}
+                <span className="text-ink">·</span>
+                <span className="num text-ink-muted text-xs font-semibold uppercase tracking-wider">
+                  <span className="text-ink font-bold">{formatNumber(stats.movesToday)}</span>{" "}
                   moves today
                 </span>
-                <span className="text-[#555555]">·</span>
-                <span className="num text-[#888888]">
-                  <span className="text-[#CCCCCC] font-semibold">{formatNumber(stats.clicksToday)}</span>{" "}
+                <span className="text-ink">·</span>
+                <span className="num text-ink-muted text-xs font-semibold uppercase tracking-wider">
+                  <span className="text-ink font-bold">{formatNumber(stats.clicksToday)}</span>{" "}
                   clicks today
                 </span>
               </>
@@ -165,110 +165,88 @@ export default async function HomePage() {
           <Link
             href="/submit"
             id="status-bar-submit"
-            className="btn-primary text-xs font-semibold px-3 py-1.5 rounded-sm flex items-center gap-1.5"
+            className="btn-primary px-3 py-1.5"
           >
-            List Your Product →
+            List Your Product
           </Link>
         </div>
       </div>
 
       {/* ── Board header ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-5">
-        <div className="flex items-end justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="font-display font-bold text-2xl text-white tracking-tight">
-              LIVE BOARD
-            </h1>
-            <p className="text-[#555555] text-sm mt-1">
-              Products competing for attention right now
-            </p>
-          </div>
-          <Link
-            href="/board"
-            className="text-xs text-[#555555] hover:text-[#CCCCCC] transition-colors"
-          >
-            Full board →
-          </Link>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-8 border-b border-bg-border">
+        <div className="flex flex-col items-center text-center gap-4">
+          <h1 className="font-display font-black text-4xl sm:text-6xl text-ink tracking-tight uppercase">
+            Live Board
+          </h1>
+          <p className="text-ink-muted text-sm sm:text-base font-bold uppercase tracking-widest max-w-xl">
+            The Internet's Products Competing For Attention
+          </p>
         </div>
       </div>
 
       {/* ── Filter strip ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {/* Filters are client-side — rendering static active state for All */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 border-b border-bg-border">
+        <div className="flex items-center justify-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {["All", "Trending", "Fastest Rising", "New", "Top Attention", "Most Clicked"].map(
             (f, i) => (
-              <button key={f} className={`filter-tab ${i === 0 ? "active" : ""}`}>
+              <button key={f} className={`filter-tab uppercase tracking-wider text-xs ${i === 0 ? "active" : ""}`}>
                 {f}
               </button>
             )
           )}
-          <div className="w-px h-4 bg-[#2A2A2A] mx-1 flex-shrink-0" />
-          {["AI", "SaaS", "Dev Tools", "E-commerce", "Consumer"].map((cat) => (
-            <Link
-              key={cat}
-              href={`/board?board=${cat.toLowerCase().replace(" ", "-")}`}
-              className="filter-tab"
-            >
-              {cat}
-            </Link>
-          ))}
         </div>
       </div>
 
       {/* ── Live Board ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-6">
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 py-8">
         {board ? (
-          <LiveBoard
-            boardId={board.id}
-            boardSlug={board.slug}
-            initialEntries={entries}
-            isAuthenticated={isAuthenticated}
-            userProductIds={userProductIds}
-            limit={50}
-            showHeader={false}
-          />
+          <div className="border-t border-bg-border border-b sm:border">
+            <LiveBoard
+              boardId={board.id}
+              boardSlug={board.slug}
+              initialEntries={entries}
+              isAuthenticated={isAuthenticated}
+              userProductIds={userProductIds}
+              limit={50}
+              showHeader={false}
+            />
+          </div>
         ) : (
-          <div className="border border-[#1A1A1A] rounded-sm py-16 text-center text-[#444444]">
+          <div className="border border-bg-border py-16 text-center text-ink-muted font-bold uppercase tracking-widest">
             <p className="text-sm">Board loading...</p>
           </div>
         )}
       </div>
 
       {/* ── Activity ticker ── */}
-      <div className="border-t border-[#1A1A1A]">
-        <ActivityFeed initialEvents={events} compact={true} />
-      </div>
+      <ActivityFeed initialEvents={events} compact={true} />
 
       {/* ── Live activity feed strip ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 border-t border-[#1A1A1A]">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-[#888888] uppercase tracking-wider">
-            Live Activity
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="flex items-center justify-between mb-6 border-b border-bg-border pb-2">
+          <h2 className="text-sm font-black text-ink uppercase tracking-widest">
+            Latest Moves
           </h2>
-          <Link href="/activity" className="text-xs text-[#555555] hover:text-[#CCCCCC] transition-colors">
-            See all →
+          <Link href="/activity" className="text-xs font-bold text-ink hover:text-ink-muted transition-colors uppercase tracking-wider">
+            View All Activity →
           </Link>
         </div>
         <ActivityFeed initialEvents={events.slice(0, 10)} compact={false} />
       </div>
 
       {/* ── Single CTA ── */}
-      <div className="border-t border-[#1A1A1A]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div className="border-t border-bg-border bg-bg-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 flex flex-col items-center text-center gap-6">
           <div>
-            <h2 className="font-display font-bold text-lg text-white">List your product</h2>
-            <p className="text-[#555555] text-sm mt-1">
-              Enter the board. Compete for attention. Get discovered.{" "}
-              <Link href="/how-it-works" className="text-[#777777] hover:text-[#CCCCCC] underline underline-offset-2 transition-colors">
-                How it works
-              </Link>
+            <h2 className="font-display font-black text-2xl sm:text-3xl text-ink uppercase tracking-tight">List your product</h2>
+            <p className="text-ink-muted text-sm mt-3 font-semibold uppercase tracking-widest">
+              Enter the board. Compete for attention. Get discovered.
             </p>
           </div>
           <Link
             href="/submit"
             id="footer-cta-submit"
-            className="btn-primary px-5 py-2.5 rounded-sm text-sm font-semibold flex-shrink-0"
+            className="btn-primary px-8 py-3 text-base"
           >
             List Your Product — ₹49
           </Link>

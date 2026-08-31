@@ -96,7 +96,7 @@ export default function AttackModal({
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: order.amount,
           currency: "INR",
-          name: "SpotWars",
+          name: "InternetBillboard.space",
           description: `Attack #${targetPosition} (${targetProduct.name})`,
           order_id: order.id,
           prefill: { email: user?.email || "" },

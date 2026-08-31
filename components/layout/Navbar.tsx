@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Menu, X, Swords } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 const navLinks = [
@@ -51,22 +51,51 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-150 ${
+      className={`fixed bottom-0 left-0 right-0 z-50 transition-all duration-150 ${
         scrolled
-          ? "bg-[#0C0C0C] border-b border-[#1A1A1A]"
-          : "bg-[#0C0C0C]/95"
+          ? "bg-bg shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
+          : "bg-bg border-t border-transparent"
       }`}
     >
+      {/* Mobile Nav */}
+      {mobileOpen && (
+        <div className="absolute bottom-full left-0 right-0 lg:hidden border-t border-bg-border bg-bg animate-fade-in">
+          <div className="max-w-7xl mx-auto px-4 py-3 space-y-2 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`block py-2 text-sm font-bold uppercase tracking-wider transition-colors border-b border-bg-border ${
+                  isActive(link.href, link.exact)
+                    ? "text-ink"
+                    : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="pt-2 space-y-2">
+              {user ? (
+                <>
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-bold uppercase tracking-wider text-ink-muted hover:text-ink border-b border-bg-border">Dashboard</Link>
+                  <button onClick={handleSignOut} className="block w-full text-left py-2 text-sm font-bold uppercase tracking-wider text-ink-muted hover:text-ink">Sign out</button>
+                </>
+              ) : (
+                <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-bold uppercase tracking-wider text-ink-muted hover:text-ink">Sign in</Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-16 border-t border-bg-border">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="w-7 h-7 border border-[#2A2A2A] rounded flex items-center justify-center bg-[#181818]">
-              <Swords className="w-3.5 h-3.5 text-[#E85D27]" />
-            </div>
-            <span className="font-display font-bold text-lg text-white tracking-tight">
-              SpotWars
+            <span className="font-display font-black text-lg sm:text-xl text-ink tracking-tight uppercase">
+              InternetBillboard.space
             </span>
             <span className="hidden sm:flex items-center gap-1 ml-1">
               <span className="live-dot" />
@@ -74,15 +103,15 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-0.5">
+          <nav className="hidden lg:flex items-center gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 text-sm font-medium transition-colors rounded-sm ${
+                className={`text-sm font-semibold transition-colors uppercase tracking-wider ${
                   isActive(link.href, link.exact)
-                    ? "text-white bg-[#181818]"
-                    : "text-[#777777] hover:text-[#CCCCCC]"
+                    ? "text-ink border-b border-bg-border"
+                    : "text-ink-muted hover:text-ink"
                 }`}
               >
                 {link.label}
@@ -91,22 +120,22 @@ export default function Navbar() {
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className={`hidden sm:block text-sm font-medium transition-colors px-3 py-1.5 rounded-sm ${
+                  className={`hidden sm:block text-sm font-semibold transition-colors uppercase tracking-wider ${
                     pathname.startsWith("/dashboard")
-                      ? "text-white bg-[#181818]"
-                      : "text-[#777777] hover:text-white"
+                      ? "text-ink border-b border-bg-border"
+                      : "text-ink-muted hover:text-ink"
                   }`}
                 >
                   Dashboard
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="hidden sm:block text-sm text-[#555555] hover:text-[#999999] transition-colors"
+                  className="hidden sm:block text-sm text-ink-muted hover:text-ink transition-colors uppercase tracking-wider font-semibold"
                 >
                   Sign out
                 </button>
@@ -114,7 +143,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/auth/login"
-                className="hidden sm:block text-sm text-[#666666] hover:text-[#CCCCCC] transition-colors"
+                className="hidden sm:block text-sm text-ink-muted hover:text-ink transition-colors uppercase tracking-wider font-semibold"
               >
                 Sign in
               </Link>
@@ -123,7 +152,7 @@ export default function Navbar() {
             <Link
               href="/submit"
               id="nav-submit-btn"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-sm btn-primary text-sm font-semibold"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 btn-primary"
             >
               <span className="hidden sm:inline">List Your Product</span>
               <span className="sm:hidden">List</span>
@@ -132,7 +161,7 @@ export default function Navbar() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-1.5 rounded-sm text-[#777777] hover:text-white hover:bg-[#181818] transition-all"
+              className="lg:hidden p-1.5 text-ink hover:bg-bg-elevated transition-all"
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -141,37 +170,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Nav */}
-      {mobileOpen && (
-        <div className="lg:hidden border-t border-[#1A1A1A] bg-[#0C0C0C] animate-fade-in">
-          <div className="max-w-7xl mx-auto px-4 py-3 space-y-0.5">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-3 py-2 text-sm font-medium transition-colors rounded-sm ${
-                  isActive(link.href, link.exact)
-                    ? "text-white bg-[#181818]"
-                    : "text-[#777777] hover:text-white"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="border-t border-[#1A1A1A] mt-2 pt-2 space-y-0.5">
-              {user ? (
-                <>
-                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-3 py-2 text-sm text-[#777777] hover:text-white rounded-sm">Dashboard</Link>
-                  <button onClick={handleSignOut} className="block w-full text-left px-3 py-2 text-sm text-[#555555] hover:text-[#999999] rounded-sm">Sign out</button>
-                </>
-              ) : (
-                <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="block px-3 py-2 text-sm text-[#777777] hover:text-white rounded-sm">Sign in</Link>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

@@ -9,9 +9,9 @@ import BoardTabs from "./BoardTabs";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Live Board — SpotWars",
+  title: "Live Board — InternetBillboard.space",
   description:
-    "All products competing for attention on SpotWars. Real-time rankings, spend data, and click metrics.",
+    "All products competing for attention on InternetBillboard.space. Real-time rankings, spend data, and click metrics.",
 };
 
 const BOARDS = [
@@ -110,27 +110,27 @@ export default async function BoardPage({
   const currentBoard = BOARDS.find((b) => b.slug === validSlug);
 
   return (
-    <div className="min-h-screen bg-[#0C0C0C]">
+    <div className="min-h-screen bg-bg text-ink">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16">
 
         {/* Page header */}
-        <div className="border-b border-[#1A1A1A] pb-5 mb-6">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="border-b border-bg-border pb-6 mb-8">
+          <div className="flex items-center gap-2 mb-3">
             <span className="live-dot" />
-            <span className="text-xs text-[#555555] font-medium uppercase tracking-wider">
+            <span className="text-xs text-ink font-black uppercase tracking-widest">
               Live Competitive Board
             </span>
           </div>
-          <div className="flex items-end justify-between flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
             <div>
-              <h1 className="font-display font-bold text-2xl text-white tracking-tight">
+              <h1 className="font-display font-black text-4xl sm:text-5xl text-ink tracking-tight uppercase">
                 {currentBoard?.label || "Global"} Board
               </h1>
               {board?.description && (
-                <p className="text-[#555555] text-sm mt-1">{board.description}</p>
+                <p className="text-ink-muted text-sm mt-3 font-bold uppercase tracking-wider">{board.description}</p>
               )}
-              <div className="flex items-center gap-3 mt-2 text-xs text-[#444444]">
+              <div className="flex items-center gap-4 mt-4 text-xs font-bold uppercase tracking-widest text-ink">
                 <span className="num">{entries.length} products competing</span>
                 <span>·</span>
                 <span>Entry from ₹49</span>
@@ -138,7 +138,7 @@ export default async function BoardPage({
             </div>
             <Link
               href="/submit"
-              className="btn-primary px-4 py-2 rounded-sm text-sm font-semibold"
+              className="btn-primary px-6 py-3"
             >
               List Your Product
             </Link>
@@ -151,9 +151,9 @@ export default async function BoardPage({
         {/* Board */}
         <Suspense
           fallback={
-            <div className="border border-[#1A1A1A] rounded-sm overflow-hidden">
+            <div className="border border-bg-border bg-bg-surface overflow-hidden">
               {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className="h-14 skeleton border-b border-[#111111]" />
+                <div key={i} className="h-16 border-b border-bg-border bg-bg animate-pulse opacity-50" />
               ))}
             </div>
           }
@@ -168,8 +168,8 @@ export default async function BoardPage({
               limit={100}
             />
           ) : (
-            <div className="border border-[#1A1A1A] rounded-sm py-20 text-center text-[#444444]">
-              <p className="text-sm">Board not found.</p>
+            <div className="border border-bg-border bg-bg py-24 text-center">
+              <p className="text-sm font-bold uppercase tracking-widest text-ink-muted">Board not found.</p>
             </div>
           )}
         </Suspense>

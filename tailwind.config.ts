@@ -10,37 +10,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // SpotWars neutral design system — functional, editorial
+        // InternetBillboard.space paper design system
         bg: {
-          DEFAULT: "#0C0C0C",
-          surface: "#111111",
-          elevated: "#181818",
-          border: "#242424",
+          DEFAULT: "#FDFBF7", // warm ivory paper
+          surface: "#F4F1EA",
+          elevated: "#EBE6DC",
+          border: "#D1CCC2",
         },
-        // Functional accent — warm orange, competitive, not AI
+        ink: {
+          DEFAULT: "#111111", // near black ink
+          light: "#222222",
+          lighter: "#444444",
+          muted: "#5A5A5A", // Better contrast against light bg
+        },
         accent: {
-          DEFAULT: "#E85D27",
+          DEFAULT: "#E85D27", // keep subtle orange for rare accents if needed
           hover: "#D44E1E",
           dim: "#E85D2720",
           // Semantic competition colors
-          green: "#22C55E",
-          "green-dim": "#22C55E18",
-          red: "#EF4444",
-          "red-dim": "#EF444418",
-          gold: "#D4A017",
-          "gold-dim": "#D4A01718",
-          blue: "#3B82F6",
-          "blue-dim": "#3B82F618",
+          green: "#059669", // muted green for up
+          "green-dim": "#05966915",
+          red: "#DC2626", // muted red for down
+          "red-dim": "#DC262615",
+          gold: "#B45309", 
+          "gold-dim": "#B4530915",
         },
         rank: {
-          gold: "#D4A017",
-          silver: "#94A3B8",
-          bronze: "#A0674A",
+          gold: "#B45309",
+          silver: "#475569",
+          bronze: "#78350F",
         },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        display: ["var(--font-space-grotesk)", "system-ui", "sans-serif"],
+        display: ["var(--font-playfair)", "Georgia", "serif"],
         mono: ["'JetBrains Mono'", "'Fira Code'", "ui-monospace", "monospace"],
       },
       animation: {
@@ -53,19 +56,19 @@ const config: Config = {
       },
       keyframes: {
         rankUp: {
-          "0%": { backgroundColor: "#22C55E18", transform: "translateY(-2px)" },
+          "0%": { backgroundColor: "#05966915", transform: "translateY(-1px)" },
           "100%": { backgroundColor: "transparent", transform: "translateY(0)" },
         },
         rankDown: {
-          "0%": { backgroundColor: "#EF444418", transform: "translateY(2px)" },
+          "0%": { backgroundColor: "#DC262615", transform: "translateY(1px)" },
           "100%": { backgroundColor: "transparent", transform: "translateY(0)" },
         },
         slideInRight: {
-          "0%": { opacity: "0", transform: "translateX(12px)" },
+          "0%": { opacity: "0", transform: "translateX(8px)" },
           "100%": { opacity: "1", transform: "translateX(0)" },
         },
         slideInUp: {
-          "0%": { opacity: "0", transform: "translateY(12px)" },
+          "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         fadeIn: {

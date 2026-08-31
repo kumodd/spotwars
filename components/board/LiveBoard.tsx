@@ -104,27 +104,27 @@ export default function LiveBoard({
   });
 
   return (
-    <div className="border border-[#1A1A1A] rounded-sm overflow-hidden">
+    <div className="border-t border-bg-border">
       {/* Optional board sub-header */}
       {showHeader && (
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#1A1A1A] bg-[#111111]">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-bg-border bg-bg-surface">
           <div className="flex items-center gap-2">
             <div
-              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                isLive ? "bg-[#EF4444]" : "bg-[#333333]"
+              className={`w-1.5 h-1.5 flex-shrink-0 ${
+                isLive ? "bg-accent-red" : "bg-ink-muted"
               }`}
             />
-            <span className="text-xs font-semibold text-[#888888] uppercase tracking-wide">
+            <span className="text-xs font-black text-ink uppercase tracking-wide">
               {isLive ? "Live" : "Board"}
             </span>
-            <span suppressHydrationWarning className="text-[#3A3A3A] text-xs">
+            <span suppressHydrationWarning className="text-ink-muted font-bold uppercase tracking-widest text-[10px]">
               · updated {lastUpdateStr}
             </span>
           </div>
           <button
             onClick={fetchBoard}
             disabled={isRefreshing}
-            className="flex items-center gap-1 text-[#555555] hover:text-[#CCCCCC] text-xs transition-colors disabled:opacity-40"
+            className="flex items-center gap-1 text-ink-muted hover:text-ink text-[10px] font-black uppercase tracking-widest transition-colors disabled:opacity-40"
           >
             <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
             Refresh
@@ -133,23 +133,23 @@ export default function LiveBoard({
       )}
 
       {/* Column headers */}
-      <div className="hidden md:flex items-center px-4 py-2 border-b border-[#1A1A1A] bg-[#0E0E0E]">
+      <div className="hidden md:flex items-center px-4 py-3 border-b border-bg-border bg-bg-surface">
         <div className="w-12 flex-shrink-0 text-right pr-3">
-          <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">#</span>
+          <span className="text-[10px] uppercase tracking-widest text-ink font-black">#</span>
         </div>
         <div className="w-8 flex-shrink-0 mr-3" />
         <div className="flex-1 mr-4">
-          <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Product</span>
+          <span className="text-[10px] uppercase tracking-widest text-ink font-black">Product</span>
         </div>
         <div className="flex items-center gap-8 flex-shrink-0 mr-4">
           <div className="text-right w-20">
-            <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Attention</span>
+            <span className="text-[10px] uppercase tracking-widest text-ink font-black">Attention</span>
           </div>
           <div className="text-right w-10">
-            <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Move</span>
+            <span className="text-[10px] uppercase tracking-widest text-ink font-black">Move</span>
           </div>
           <div className="text-right w-16">
-            <span className="text-[10px] uppercase tracking-wider text-[#3A3A3A] font-semibold">Clicks</span>
+            <span className="text-[10px] uppercase tracking-widest text-ink font-black">Clicks</span>
           </div>
         </div>
         <div className="w-16 flex-shrink-0" />
@@ -157,9 +157,9 @@ export default function LiveBoard({
 
       {/* Board rows */}
       {entries.length === 0 ? (
-        <div className="text-center py-16 text-[#444444]">
-          <p className="text-sm">No products on this board yet.</p>
-          <p className="text-xs mt-1 text-[#333333]">Be the first to stake your claim.</p>
+        <div className="text-center py-16 text-ink">
+          <p className="text-sm font-bold uppercase tracking-wider">No products on this board yet.</p>
+          <p className="text-[10px] mt-2 text-ink-muted font-bold uppercase tracking-widest">Be the first to stake your claim.</p>
         </div>
       ) : (
         <div>

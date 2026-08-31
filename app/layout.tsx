@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,19 +8,19 @@ const inter = Inter({
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
+  variable: "--font-playfair",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "SpotWars — The Internet Attention Market",
-    template: "%s | SpotWars",
+    default: "InternetBillboard.space — The Internet Attention Market",
+    template: "%s | InternetBillboard.space",
   },
   description:
-    "Put your product on the internet's live leaderboard and fight for the spotlight. SpotWars is the competitive marketplace where products battle for attention, position, and customers.",
+    "Put your product on the internet's live billboard and fight for the spotlight. InternetBillboard.space is the competitive marketplace where products battle for attention, position, and customers.",
   keywords: [
     "product promotion",
     "startup marketing",
@@ -31,14 +31,14 @@ export const metadata: Metadata = {
     "startup discovery",
   ],
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://spotwars.in"
+    process.env.NEXT_PUBLIC_APP_URL || "https://internetbillboard.space"
   ),
   openGraph: {
     type: "website",
-    locale: "en_IN",
+    locale: "en_US",
     url: "/",
-    siteName: "SpotWars",
-    title: "SpotWars — The Internet Attention Market",
+    siteName: "InternetBillboard.space",
+    title: "InternetBillboard.space — The Internet Attention Market",
     description:
       "Products compete. The internet decides what gets seen. Fight for the spotlight.",
     images: [
@@ -46,14 +46,14 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "SpotWars — The Internet Attention Market",
+        alt: "InternetBillboard.space — The Internet Attention Market",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SpotWars — The Internet Attention Market",
-    description: "Products battle for attention. Watch the leaderboard live.",
+    title: "InternetBillboard.space — The Internet Attention Market",
+    description: "Products battle for attention. Watch the billboard live.",
   },
   robots: {
     index: true,
@@ -67,11 +67,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} bg-bg text-slate-100 antialiased`}>
+      <body className={`${inter.variable} ${playfair.variable} bg-bg text-ink antialiased pb-16`}>
         {children}
       </body>
     </html>
