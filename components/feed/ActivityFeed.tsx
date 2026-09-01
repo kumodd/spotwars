@@ -29,10 +29,11 @@ export default function ActivityFeed({
           event: "INSERT",
           schema: "public",
           table: "activity_events",
-          filter: "is_public=eq.true",
         },
         (payload) => {
           const newEvent = payload.new as ActivityEvent;
+          if (!newEvent.is_public) return;
+          
           setEvents((prev) => [newEvent, ...prev].slice(0, 60));
           setNewIds((prev) => new Set([...prev, newEvent.id]));
           setTimeout(() => {
