@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   if (!data) return { title: "Product Not Found" };
   const { product } = data;
   return {
-    title: `${product.name} — InternetBillboard.space`,
+    title: `${product.name} — Product Profile & Live Ranking | InternetBillboard.space`,
     description: product.tagline,
     openGraph: {
       title: `${product.name} on InternetBillboard.space`,
@@ -314,6 +314,52 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
       <Footer />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Product",
+                "name": product.name,
+                "description": product.description || product.tagline,
+                "category": product.category,
+                "url": `https://internetbillboard.space/product/${product.id}`,
+                "image": product.logo_url || "https://internetbillboard.space/logo.jpg"
+              },
+              {
+                "@type": "SoftwareApplication",
+                "name": product.name,
+                "applicationCategory": product.category
+              },
+              {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "https://internetbillboard.space/"
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": product.category || "Products",
+                    "item": `https://internetbillboard.space/category/${(product.category || "all").toLowerCase().replace(/ /g, '-')}`
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": product.name,
+                    "item": `https://internetbillboard.space/product/${product.id}`
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
     </div>
   );
 }

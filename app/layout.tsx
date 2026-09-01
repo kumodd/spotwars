@@ -70,6 +70,34 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "url": "https://internetbillboard.space/",
+                  "name": "InternetBillboard.space",
+                  "description":
+                    "The live internet billboard where products compete for attention and visibility.",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://internetbillboard.space/search?q={search_term_string}",
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+                {
+                  "@type": "Organization",
+                  "url": "https://internetbillboard.space",
+                  "name": "InternetBillboard.space",
+                  "logo": "https://internetbillboard.space/logo.jpg",
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className={`${inter.variable} ${playfair.variable} bg-bg text-ink antialiased pt-10`}>
         {children}

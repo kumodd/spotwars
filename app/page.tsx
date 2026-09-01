@@ -9,9 +9,9 @@ import { formatINR, formatNumber } from "@/lib/utils";
 import type { BoardEntry, ActivityEvent, Product } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "InternetBillboard.space — Live Internet Attention Market",
+  title: "InternetBillboard.space — Live Internet Billboard & Product Rankings",
   description:
-    "Products competing for attention right now. Real-time rankings driven by spend, clicks, and momentum.",
+    "The live internet billboard where products compete for attention. View real-time product rankings driven by spend, clicks, and momentum on InternetBillboard.space.",
 };
 
 async function getHomepageData() {
