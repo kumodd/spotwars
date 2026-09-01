@@ -36,18 +36,18 @@ export async function GET(request: Request) {
     }
 
     // 3. Calculate required estimates
-    const entryFee = Math.max(board.entry_fee, 2900); // Minimum 29 INR
+    const entryFee = Math.max(board.entry_fee, 4900); // Minimum 49 INR
     const increment = board.min_overtake_increment;
 
     // Helper to get required amount for a specific rank
     const getRequiredForRank = (targetRank: number) => {
       const currentAtRank = positions?.find((p) => p.position === targetRank);
-      
+
       if (currentAtRank) {
         // If someone is there, we need their spend + increment
         return currentAtRank.spend_on_board + increment;
       }
-      
+
       // If the rank doesn't exist (e.g. board has 0 products), just the entry fee
       return entryFee;
     };

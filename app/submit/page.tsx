@@ -49,7 +49,7 @@ const DEFAULT_FORM: FormData = {
   company_name: "",
   board_slug: "global",
   board_id: "",
-  amount: 2900, // ₹29 in paise (minimum)
+  amount: 4900, // ₹49 in paise (minimum)
   currency: "INR",
 };
 
@@ -88,7 +88,7 @@ export default function SubmitPage() {
       return;
     }
     if (form.url === lastAnalyzedUrl) return; // Prevent duplicate triggers
-    
+
     setIsAnalyzing(true);
     setError("");
     setLastAnalyzedUrl(form.url);
@@ -292,11 +292,10 @@ export default function SubmitPage() {
           <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-y-4">
             {STEPS.map((s, i) => (
               <div key={s.id} className="flex items-center sm:flex-1">
-                <div className={`flex items-center gap-2 px-3 py-1.5 border transition-all ${
-                  step === s.id ? "bg-ink text-bg border-bg-border" :
-                  step > s.id ? "bg-bg text-ink border-bg-border" :
-                  "bg-bg-surface text-ink-muted border-bg-border/30"
-                }`}>
+                <div className={`flex items-center gap-2 px-3 py-1.5 border transition-all ${step === s.id ? "bg-ink text-bg border-bg-border" :
+                    step > s.id ? "bg-bg text-ink border-bg-border" :
+                      "bg-bg-surface text-ink-muted border-bg-border/30"
+                  }`}>
                   {step > s.id ? <CheckCircle2 className="w-3 h-3" /> : <span className="font-black text-xs num">{s.id}</span>}
                   <span className="hidden sm:inline text-xs font-black uppercase tracking-widest">{s.label}</span>
                 </div>
@@ -334,8 +333,8 @@ export default function SubmitPage() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label className="block text-xs font-black text-ink uppercase tracking-widest">Product URL *</label>
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={handleAnalyzeUrl}
                         disabled={isAnalyzing || !form.url}
                         className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 text-ink hover:text-ink-muted transition-colors disabled:opacity-50"
@@ -503,17 +502,15 @@ export default function SubmitPage() {
               <div className="flex items-center gap-0 border border-bg-border w-max mb-8 bg-bg">
                 <button
                   onClick={() => update("currency", "INR")}
-                  className={`px-6 py-2 text-xs font-black uppercase tracking-widest transition-all ${
-                    form.currency === "INR" ? "bg-ink text-bg" : "text-ink hover:bg-bg-surface"
-                  }`}
+                  className={`px-6 py-2 text-xs font-black uppercase tracking-widest transition-all ${form.currency === "INR" ? "bg-ink text-bg" : "text-ink hover:bg-bg-surface"
+                    }`}
                 >
                   INR (₹)
                 </button>
                 <button
                   onClick={() => update("currency", "USD")}
-                  className={`px-6 py-2 text-xs font-black uppercase tracking-widest transition-all border-l border-bg-border ${
-                    form.currency === "USD" ? "bg-ink text-bg" : "text-ink hover:bg-bg-surface"
-                  }`}
+                  className={`px-6 py-2 text-xs font-black uppercase tracking-widest transition-all border-l border-bg-border ${form.currency === "USD" ? "bg-ink text-bg" : "text-ink hover:bg-bg-surface"
+                    }`}
                 >
                   USD ($)
                 </button>
@@ -529,19 +526,18 @@ export default function SubmitPage() {
                   </div>
                 ) : (
                   estimates.map((p) => {
-                    const displayAmount = form.currency === "USD" 
-                      ? Math.max(100, Math.ceil(p.amount_paise / 84)) 
+                    const displayAmount = form.currency === "USD"
+                      ? Math.max(100, Math.ceil(p.amount_paise / 84))
                       : p.amount_paise;
 
                     return (
                       <button
                         key={p.position}
                         onClick={() => update("amount", displayAmount)}
-                        className={`w-full flex items-center justify-between px-6 py-4 border transition-all ${
-                          form.amount === displayAmount
+                        className={`w-full flex items-center justify-between px-6 py-4 border transition-all ${form.amount === displayAmount
                             ? "border-bg-border bg-ink text-bg"
                             : "border-bg-border bg-bg text-ink hover:bg-bg-surface"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-4">
                           <span className="font-display font-black text-xl num">
@@ -564,14 +560,14 @@ export default function SubmitPage() {
                   <input
                     id="custom-amount-input"
                     type="number"
-                    min={form.currency === "USD" ? 1 : 29}
+                    min={form.currency === "USD" ? 1 : 49}
                     step={1}
                     value={form.amount / 100}
-                    onChange={(e) => update("amount", Math.max(form.currency === "USD" ? 1 : 29, parseInt(e.target.value || (form.currency === "USD" ? "1" : "29"))) * 100)}
+                    onChange={(e) => update("amount", Math.max(form.currency === "USD" ? 1 : 49, parseInt(e.target.value || (form.currency === "USD" ? "1" : "49"))) * 100)}
                     className="w-full bg-bg border border-bg-border pl-10 pr-4 py-4 text-ink font-black text-lg focus:outline-none transition-colors num"
                   />
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mt-2">Minimum {form.currency === "USD" ? "$1" : "₹29"} · Position updates in real-time after payment</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-ink-muted mt-2">Minimum {form.currency === "USD" ? "$1" : "₹49"} · Position updates in real-time after payment</p>
               </div>
 
               <button

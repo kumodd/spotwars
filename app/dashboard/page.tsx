@@ -170,7 +170,7 @@ export default async function DashboardPage() {
                   No Products Yet
                 </p>
                 <p className="text-ink-muted text-xs font-semibold uppercase tracking-widest mb-6">
-                  List your first product and enter the board for ₹29
+                  List your first product and enter the board for ₹49
                 </p>
                 <Link href="/submit" className="btn-primary px-6 py-3 inline-block">
                   List Your Product
@@ -210,13 +210,12 @@ export default async function DashboardPage() {
                               <p className="text-ink-muted text-xs truncate mt-0.5">{product.tagline}</p>
                             </div>
                             <div className="flex items-center gap-1.5 flex-shrink-0">
-                              <span className={`badge ${
-                                product.status === "active"
+                              <span className={`badge ${product.status === "active"
                                   ? "border-accent-green text-accent-green"
                                   : product.status === "pending"
-                                  ? "border-accent-gold text-accent-gold"
-                                  : "border-bg-border text-ink-muted"
-                              }`}>
+                                    ? "border-accent-gold text-accent-gold"
+                                    : "border-bg-border text-ink-muted"
+                                }`}>
                                 {product.status}
                               </span>
                               <DeleteProductButton productId={product.id} />

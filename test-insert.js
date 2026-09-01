@@ -6,7 +6,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 
 async function test() {
   const { data, error } = await supabase.from('products').insert({
-    founder_id: 'a1005a96-a83d-4299-aec5-1c5c165f14e7', // I'll use a dummy UUID, wait, it must exist in auth.users!
+    founder_id: 'a1005a96-a83d-4499-aec5-1c5c165f14e7', // I'll use a dummy UUID, wait, it must exist in auth.users!
     name: 'Test',
     url: 'https://test.com',
     tagline: 'Test',

@@ -62,9 +62,8 @@ export default function ForFoundersPage() {
           {reasons.map((r, i) => (
             <div
               key={r.title}
-              className={`flex flex-col sm:flex-row gap-2 sm:gap-6 py-6 ${
-                i < reasons.length - 1 ? "border-b border-bg-border" : "border-b border-bg-border"
-              }`}
+              className={`flex flex-col sm:flex-row gap-2 sm:gap-6 py-6 ${i < reasons.length - 1 ? "border-b border-bg-border" : "border-b border-bg-border"
+                }`}
             >
               <div className="flex-shrink-0 sm:w-10 pt-1">
                 <span className="font-display font-black text-xl text-ink num">
@@ -142,8 +141,8 @@ export default function ForFoundersPage() {
             <h3 className="text-sm font-black text-ink uppercase tracking-widest">Pricing</h3>
           </div>
           {[
-            ["Entry fee", "₹29 minimum to list and enter the board"],
-            ["Attention budget", "Your spend determines your rank. Start from ₹29."],
+            ["Entry fee", "₹49 minimum to list and enter the board"],
+            ["Attention budget", "Your spend determines your rank. Start from ₹49."],
             ["Overtake", "Pay ₹1 more than the product above you to move up"],
             ["No subscription", "Pay only when you choose to compete or defend"],
             ["No monthly fees", "Your listing stays active as long as you have budget"],
@@ -167,7 +166,7 @@ export default function ForFoundersPage() {
               Enter the board
             </h3>
             <p className="text-ink-muted text-xs font-bold uppercase tracking-wider">
-              ₹29 entry. Live immediately. No setup.
+              ₹49 entry. Live immediately. No setup.
             </p>
           </div>
           <div className="flex items-center gap-4">

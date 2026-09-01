@@ -22,13 +22,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate minimum amount
-    const MIN_INR_PAISE = 2900; // ₹29
+    const MIN_INR_PAISE = 4900; // ₹49
     const MIN_USD_CENTS = 50;   // $0.50
 
     if (currency === "USD" && amount < MIN_USD_CENTS) {
       return NextResponse.json({ error: "Minimum bid is $0.50" }, { status: 400 });
     } else if (currency === "INR" && amount < MIN_INR_PAISE) {
-      return NextResponse.json({ error: "Minimum bid is ₹29" }, { status: 400 });
+      return NextResponse.json({ error: "Minimum bid is ₹49" }, { status: 400 });
     }
 
     // Verify product belongs to user
