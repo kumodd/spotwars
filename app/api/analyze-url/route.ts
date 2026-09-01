@@ -93,7 +93,7 @@ Analyze this and output the JSON.`;
         { role: "user", content: userPrompt }
       ],
       response_format: { type: "json_object" },
-      temperature: 0.2,
+      temperature: process.env.OPENAI_TEMPERATURE ? parseFloat(process.env.OPENAI_TEMPERATURE) : 1,
     });
 
     const aiResponse = completion.choices[0]?.message?.content;
