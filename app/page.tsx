@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import LiveBoard from "@/components/board/LiveBoard";
 import ActivityFeed from "@/components/feed/ActivityFeed";
-import { formatNumber } from "@/lib/utils";
+import { formatINR, formatNumber } from "@/lib/utils";
 import type { BoardEntry, ActivityEvent, Product } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -87,11 +87,8 @@ async function getHomepageData() {
     .select("*", { count: "exact", head: true })
     .gte("created_at", todayStart.toISOString());
 
-  // Today's clicks
-  const { count: clicksToday } = await supabase
-    .from("product_clicks")
-    .select("*", { count: "exact", head: true })
-    .gte("created_at", todayStart.toISOString());
+  // Total spend on board (top 50)
+  const totalOnBoard = entries.reduce((sum, e) => sum + e.spend_on_board, 0);
 
   return {
     board,
@@ -101,7 +98,7 @@ async function getHomepageData() {
       products: productCount || 0,
       clicks: clickCount || 0,
       movesToday: movesToday || 0,
-      clicksToday: clicksToday || 0,
+      totalOnBoard,
     },
   };
 }
@@ -131,129 +128,118 @@ export default async function HomePage() {
   ] = await Promise.all([getHomepageData(), getAuthState()]);
 
   return (
-    <div className="min-h-screen bg-bg text-ink">
+    <div className="min-h-screen flex flex-col bg-bg text-ink">
       <Navbar />
 
-      {/* ── Status bar ── */}
-      <div className="status-bar border-b border-bg-border bg-bg-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between flex-wrap gap-3 py-1">
-          <div className="flex items-center gap-5 flex-wrap">
-            <div className="flex items-center gap-2">
-              <span className="live-dot" />
-              <span className="font-bold text-ink uppercase tracking-wider text-xs">Live</span>
-            </div>
-            {stats && (
-              <>
-                <span className="text-ink">·</span>
-                <span className="num text-ink-muted text-xs font-semibold uppercase tracking-wider">
-                  <span className="text-ink font-bold">{formatNumber(stats.products)}</span>{" "}
-                  products
-                </span>
-                <span className="text-ink">·</span>
-                <span className="num text-ink-muted text-xs font-semibold uppercase tracking-wider">
-                  <span className="text-ink font-bold">{formatNumber(stats.movesToday)}</span>{" "}
-                  moves today
-                </span>
-                <span className="text-ink">·</span>
-                <span className="num text-ink-muted text-xs font-semibold uppercase tracking-wider">
-                  <span className="text-ink font-bold">{formatNumber(stats.clicksToday)}</span>{" "}
-                  clicks today
-                </span>
-              </>
-            )}
-          </div>
-          <Link
-            href="/submit"
-            id="status-bar-submit"
-            className="btn-primary px-3 py-1.5"
-          >
-            List Your Product
-          </Link>
-        </div>
-      </div>
-
-      {/* ── Board header ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-8 border-b border-bg-border">
-        <div className="flex flex-col items-center text-center gap-4">
-          <h1 className="font-display font-black text-4xl sm:text-6xl text-ink tracking-tight uppercase">
-            Live Board
-          </h1>
-          <p className="text-ink-muted text-sm sm:text-base font-bold uppercase tracking-widest max-w-xl">
-            The Internet's Products Competing For Attention
-          </p>
-        </div>
-      </div>
-
-      {/* ── Filter strip ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 border-b border-bg-border">
-        <div className="flex items-center justify-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {["All", "Trending", "Fastest Rising", "New", "Top Attention", "Most Clicked"].map(
-            (f, i) => (
-              <button key={f} className={`filter-tab uppercase tracking-wider text-xs ${i === 0 ? "active" : ""}`}>
-                {f}
-              </button>
-            )
-          )}
-        </div>
-      </div>
-
-      {/* ── Live Board ── */}
-      <div className="max-w-7xl mx-auto px-0 sm:px-6 py-8">
-        {board ? (
-          <div className="border-t border-bg-border border-b sm:border">
-            <LiveBoard
-              boardId={board.id}
-              boardSlug={board.slug}
-              initialEntries={entries}
-              isAuthenticated={isAuthenticated}
-              userProductIds={userProductIds}
-              limit={50}
-              showHeader={false}
-            />
-          </div>
-        ) : (
-          <div className="border border-bg-border py-16 text-center text-ink-muted font-bold uppercase tracking-widest">
-            <p className="text-sm">Board loading...</p>
-          </div>
-        )}
-      </div>
-
-      {/* ── Activity ticker ── */}
+      {/* ── Activity ticker tape — below nav, above board ── */}
       <ActivityFeed initialEvents={events} compact={true} />
 
-      {/* ── Live activity feed strip ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="flex items-center justify-between mb-6 border-b border-bg-border pb-2">
-          <h2 className="text-sm font-black text-ink uppercase tracking-widest">
-            Latest Moves
-          </h2>
-          <Link href="/activity" className="text-xs font-bold text-ink hover:text-ink-muted transition-colors uppercase tracking-wider">
-            View All Activity →
-          </Link>
-        </div>
-        <ActivityFeed initialEvents={events.slice(0, 10)} compact={false} />
-      </div>
-
-      {/* ── Single CTA ── */}
-      <div className="border-t border-bg-border bg-bg-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 flex flex-col items-center text-center gap-6">
+      {/* ── Dashboard Hero ── */}
+      <div className="pt-10 pb-6 px-4 sm:px-6 max-w-6xl mx-auto text-center md:text-left mt-4 md:mt-8 w-full">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h2 className="font-display font-black text-2xl sm:text-3xl text-ink uppercase tracking-tight">List your product</h2>
-            <p className="text-ink-muted text-sm mt-3 font-semibold uppercase tracking-widest">
-              Enter the board. Compete for attention. Get discovered.
-            </p>
+            <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
+              <span className="live-dot w-2 h-2" aria-hidden="true" />
+              <h1 className="font-display font-black text-4xl sm:text-5xl text-ink tracking-tight uppercase leading-none">
+                Live Board
+              </h1>
+            </div>
+            {stats && (
+              <div className="flex items-center justify-center md:justify-start gap-3 text-ink-muted text-xs font-bold uppercase tracking-widest flex-wrap">
+                <span><strong className="text-ink text-sm">{formatNumber(stats.products)}</strong> products</span>
+                <span className="text-bg-border" aria-hidden="true">·</span>
+                <span><strong className="text-ink text-sm">{formatNumber(stats.movesToday)}</strong> moves today</span>
+                <span className="text-bg-border" aria-hidden="true">·</span>
+                <span><strong className="text-ink text-sm">{formatINR(stats.totalOnBoard, true)}</strong> on board</span>
+              </div>
+            )}
           </div>
-          <Link
-            href="/submit"
-            id="footer-cta-submit"
-            className="btn-primary px-8 py-3 text-base"
-          >
-            List Your Product — ₹49
-          </Link>
+          
+          {/* Secondary CTA */}
+          <div className="flex-shrink-0">
+            <Link href="/submit" className="btn-secondary px-5 py-2.5 shadow-sm bg-white">
+              List Your Product
+            </Link>
+          </div>
         </div>
       </div>
 
-      <Footer />
+      {/* ── Filter / Navigation Strip ── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-8 w-full">
+        <div className="flex justify-center md:justify-start overflow-x-auto pb-1 scrollbar-none">
+          <div className="segmented-control rounded-sm">
+            {["All", "Trending", "Fastest Rising", "New", "Top Attention", "Most Clicked"].map(
+              (f, i) => (
+                <button
+                  key={f}
+                  className={`segment-btn ${i === 0 ? "active" : ""}`}
+                  aria-pressed={i === 0}
+                >
+                  {f}
+                </button>
+              )
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Content Grid ── */}
+      <div className="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 pb-16 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10 lg:gap-12 items-start">
+        
+        {/* Left Column: Live Board */}
+        <div>
+          {board ? (
+            <div>
+              <LiveBoard
+                boardId={board.id}
+                boardSlug={board.slug}
+                initialEntries={entries}
+                isAuthenticated={isAuthenticated}
+                userProductIds={userProductIds}
+                limit={50}
+                showHeader={false}
+              />
+            </div>
+          ) : (
+            <div className="border border-bg-border mx-4 sm:mx-0 my-6">
+              <div className="py-20 text-center">
+                <p className="font-display font-black text-2xl text-ink uppercase tracking-tight mb-2">
+                  The Board Is Just Getting Started
+                </p>
+                <p className="text-ink-muted text-sm font-semibold uppercase tracking-widest mb-6">
+                  Be one of the first products on InternetBillboard.space
+                </p>
+                <Link href="/submit" className="btn-primary px-6 py-3">
+                  List Your Product
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Live Activity Feed (Sticky) */}
+        <div className="sticky top-16 pt-2 lg:border-l border-bg-border lg:pl-10">
+          <div className="flex items-center justify-between mb-6 pb-3 border-b border-bg-border">
+            <div className="flex items-center gap-2.5">
+              <span className="live-dot w-1.5 h-1.5" />
+              <h2 className="text-sm font-black text-ink uppercase tracking-widest">
+                Live Activity
+              </h2>
+            </div>
+            <Link
+              href="/activity"
+              className="text-xs font-bold text-ink-muted hover:text-ink transition-colors uppercase tracking-wider"
+            >
+              All →
+            </Link>
+          </div>
+          <ActivityFeed initialEvents={events.slice(0, 15)} compact={false} />
+        </div>
+      </div>
+
+      <div className="mt-auto w-full">
+        <Footer />
+      </div>
     </div>
   );
 }

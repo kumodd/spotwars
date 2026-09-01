@@ -133,7 +133,7 @@ export default async function BoardPage({
               <div className="flex items-center gap-4 mt-4 text-xs font-bold uppercase tracking-widest text-ink">
                 <span className="num">{entries.length} products competing</span>
                 <span>·</span>
-                <span>Entry from ₹49</span>
+                <span>Entry from ₹29</span>
               </div>
             </div>
             <Link

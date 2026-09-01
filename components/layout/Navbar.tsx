@@ -13,7 +13,6 @@ const navLinks = [
   { href: "/battles", label: "Battles" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/activity", label: "Activity" },
-  { href: "/for-founders", label: "For Founders" },
 ];
 
 export default function Navbar() {
@@ -32,10 +31,12 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 4);
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -44,98 +45,59 @@ export default function Navbar() {
     router.refresh();
   };
 
-  const isActive = (href: string, exact?: boolean) => {
-    if (exact) return pathname === href;
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string, exact?: boolean) =>
+    exact ? pathname === href : pathname.startsWith(href);
 
   return (
     <header
-      className={`fixed bottom-0 left-0 right-0 z-50 transition-all duration-150 ${
-        scrolled
-          ? "bg-bg shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]"
-          : "bg-bg border-t border-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 bg-bg border-b border-bg-border transition-shadow duration-150 ${
+        scrolled ? "shadow-[0_1px_4px_rgba(0,0,0,0.07)]" : ""
       }`}
     >
-      {/* Mobile Nav */}
-      {mobileOpen && (
-        <div className="absolute bottom-full left-0 right-0 lg:hidden border-t border-bg-border bg-bg animate-fade-in">
-          <div className="max-w-7xl mx-auto px-4 py-3 space-y-2 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.05)]">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block py-2 text-sm font-bold uppercase tracking-wider transition-colors border-b border-bg-border ${
-                  isActive(link.href, link.exact)
-                    ? "text-ink"
-                    : "text-ink-muted hover:text-ink"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="pt-2 space-y-2">
-              {user ? (
-                <>
-                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-bold uppercase tracking-wider text-ink-muted hover:text-ink border-b border-bg-border">Dashboard</Link>
-                  <button onClick={handleSignOut} className="block w-full text-left py-2 text-sm font-bold uppercase tracking-wider text-ink-muted hover:text-ink">Sign out</button>
-                </>
-              ) : (
-                <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="block py-2 text-sm font-bold uppercase tracking-wider text-ink-muted hover:text-ink">Sign in</Link>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16 border-t border-bg-border">
+        <div className="flex items-center justify-between h-10">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <span className="font-display font-black text-lg sm:text-xl text-ink tracking-tight uppercase">
+          <Link href="/" className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="font-display font-black text-sm text-ink tracking-tight uppercase leading-none">
               InternetBillboard.space
             </span>
-            <span className="hidden sm:flex items-center gap-1 ml-1">
-              <span className="live-dot" />
-            </span>
+            <span className="live-dot" aria-label="live" />
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-semibold transition-colors uppercase tracking-wider ${
-                  isActive(link.href, link.exact)
-                    ? "text-ink border-b border-bg-border"
-                    : "text-ink-muted hover:text-ink"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center" aria-label="Main navigation">
+            {navLinks.map((link) => {
+              const active = isActive(link.href, link.exact);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-0.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
+                    active ? "text-ink border-b-2 border-ink" : "text-ink-muted hover:text-ink"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className={`hidden sm:block text-sm font-semibold transition-colors uppercase tracking-wider ${
-                    pathname.startsWith("/dashboard")
-                      ? "text-ink border-b border-bg-border"
-                      : "text-ink-muted hover:text-ink"
+                  className={`hidden sm:block text-[11px] font-bold uppercase tracking-wider transition-colors px-2 ${
+                    pathname.startsWith("/dashboard") ? "text-ink" : "text-ink-muted hover:text-ink"
                   }`}
                 >
                   Dashboard
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="hidden sm:block text-sm text-ink-muted hover:text-ink transition-colors uppercase tracking-wider font-semibold"
+                  className="hidden sm:block text-[11px] text-ink-muted hover:text-ink transition-colors uppercase tracking-wider font-bold"
                 >
                   Sign out
                 </button>
@@ -143,7 +105,7 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/auth/login"
-                className="hidden sm:block text-sm text-ink-muted hover:text-ink transition-colors uppercase tracking-wider font-semibold"
+                className="hidden sm:block text-[11px] text-ink-muted hover:text-ink transition-colors uppercase tracking-wider font-bold"
               >
                 Sign in
               </Link>
@@ -152,24 +114,57 @@ export default function Navbar() {
             <Link
               href="/submit"
               id="nav-submit-btn"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 btn-primary"
+              className="btn-primary px-3 py-1 text-[11px]"
             >
-              <span className="hidden sm:inline">List Your Product</span>
-              <span className="sm:hidden">List</span>
+              List Your Product
             </Link>
 
-            {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-1.5 text-ink hover:bg-bg-elevated transition-all"
-              aria-label="Toggle menu"
+              className="lg:hidden p-1 text-ink hover:bg-bg-surface transition-all"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
       </div>
 
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="lg:hidden border-t border-bg-border bg-bg animate-fade-in" role="dialog" aria-label="Mobile navigation">
+          <div className="max-w-7xl mx-auto px-4 py-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center py-2.5 text-xs font-bold uppercase tracking-wider border-b border-bg-border transition-colors ${
+                  isActive(link.href, link.exact) ? "text-ink" : "text-ink-muted hover:text-ink"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="py-1">
+              {user ? (
+                <>
+                  <Link href="/dashboard" className="flex items-center py-2.5 text-xs font-bold uppercase tracking-wider text-ink-muted hover:text-ink border-b border-bg-border">
+                    Dashboard
+                  </Link>
+                  <button onClick={handleSignOut} className="text-left w-full py-2.5 text-xs font-bold uppercase tracking-wider text-ink-muted hover:text-ink">
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <Link href="/auth/login" className="flex items-center py-2.5 text-xs font-bold uppercase tracking-wider text-ink-muted hover:text-ink">
+                  Sign in
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

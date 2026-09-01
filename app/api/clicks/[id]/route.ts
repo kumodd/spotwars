@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 
+// Basic in-memory rate limiting to prevent simple botting
+const rateLimitMap = new Map<string, number>();
+const RATE_LIMIT_MS = 60 * 1000; // 1 minute per product per IP
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -17,6 +21,28 @@ export async function POST(
     const sessionId = request.headers.get("x-session-id") || undefined;
     const referrer = request.headers.get("referer") || undefined;
     const userAgent = request.headers.get("user-agent") || undefined;
+
+    // Basic rate limiting
+    const rateLimitKey = `${ipHash}-${productId}`;
+    const lastClickTime = rateLimitMap.get(rateLimitKey);
+    const now = Date.now();
+
+    if (lastClickTime && now - lastClickTime < RATE_LIMIT_MS) {
+      // Silently ignore to not alert bots
+      return NextResponse.json({ success: true, rateLimited: true });
+    }
+
+    rateLimitMap.set(rateLimitKey, now);
+
+    // Simple memory management for the rate limit map
+    if (rateLimitMap.size > 10000) {
+      const oneHourAgo = now - 60 * 60 * 1000;
+      for (const [key, timestamp] of rateLimitMap.entries()) {
+        if (timestamp < oneHourAgo) {
+          rateLimitMap.delete(key);
+        }
+      }
+    }
 
     // Insert click
     await adminSupabase.from("product_clicks").insert({

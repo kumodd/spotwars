@@ -56,18 +56,22 @@ export function getSpotScoreColor(score: number): string {
 }
 
 // Activity event emoji & text
-export function getEventDisplay(eventType: string, data: Record<string, unknown>): { emoji: string; text: string } {
+export function getEventDisplay(eventType: string, data: Record<string, unknown>): { emoji: string; text: string; targetName?: string } {
   switch (eventType) {
-    case 'product_entered': return { emoji: '🚀', text: `entered the board at #${data.position}` }
-    case 'overtake': return { emoji: '⚔️', text: `took #${data.new_position} from ${data.target_name}` }
-    case 'defense': return { emoji: '🛡️', text: `defended position #${data.position}` }
-    case 'reached_top10': return { emoji: '💥', text: 'entered the Top 10!' }
-    case 'reached_top3': return { emoji: '🔥', text: 'entered the Top 3!' }
-    case 'reached_number1': return { emoji: '👑', text: 'reached #1!' }
-    case 'milestone_clicks': return { emoji: '🎉', text: `reached ${formatNumber(data.clicks as number)} clicks!` }
-    case 'trending': return { emoji: '📈', text: 'is now trending!' }
-    case 'fastest_riser': return { emoji: '🚀', text: 'is the Fastest Riser today!' }
-    default: return { emoji: '⚡', text: 'made a move' }
+    case 'product_entered': return { emoji: '↗', text: `entered the board at #${data.position}` }
+    case 'overtake': return {
+      emoji: '↑',
+      text: `overtook ${data.target_name || 'a competitor'} · claimed #${data.new_position}`,
+      targetName: data.target_name as string | undefined,
+    }
+    case 'defense': return { emoji: '—', text: `defended position #${data.position}` }
+    case 'reached_top10': return { emoji: '↑', text: 'entered the Top 10' }
+    case 'reached_top3': return { emoji: '↑', text: 'entered the Top 3' }
+    case 'reached_number1': return { emoji: '#1', text: 'took the top spot' }
+    case 'milestone_clicks': return { emoji: '·', text: `reached ${formatNumber(data.clicks as number)} clicks` }
+    case 'trending': return { emoji: '↑', text: 'is trending' }
+    case 'fastest_riser': return { emoji: '↑', text: 'is the fastest riser today' }
+    default: return { emoji: '·', text: 'made a move' }
   }
 }
 

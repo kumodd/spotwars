@@ -13,7 +13,7 @@ CREATE TABLE boards (
   slug TEXT UNIQUE NOT NULL,
   type TEXT NOT NULL CHECK (type IN ('global', 'category', 'geo', 'stage', 'theme')),
   category TEXT,
-  entry_fee INTEGER NOT NULL DEFAULT 49, -- in paise (₹49 = 4900)
+  entry_fee INTEGER NOT NULL DEFAULT 2900, -- in paise (₹29 = 2900)
   min_overtake_increment INTEGER NOT NULL DEFAULT 100, -- in paise (₹1 = 100)
   max_positions INTEGER NOT NULL DEFAULT 100,
   is_active BOOLEAN NOT NULL DEFAULT true,

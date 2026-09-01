@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Swords, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
+import { X, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import { formatINR, loadRazorpay, costToTake } from "@/lib/utils";
 import type { Product, RazorpayPaymentResponse } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
@@ -39,7 +39,7 @@ export default function AttackModal({
   const [error, setError] = useState("");
   const supabase = typeof window !== "undefined" ? createClient() : null;
 
-  const attackCost = costToTake(targetSpend);
+  const takeCost = costToTake(targetSpend);
 
   // Load user products if none pre-selected
   useState(() => {
@@ -56,7 +56,7 @@ export default function AttackModal({
     }
   });
 
-  const handleAttack = async () => {
+  const handleTake = async () => {
     if (!selectedProductId) return;
     setStep("paying");
     setError("");
@@ -72,7 +72,7 @@ export default function AttackModal({
         body: JSON.stringify({
           product_id: selectedProductId,
           board_id: boardId,
-          amount: attackCost,
+          amount: takeCost,
           type: "attack",
           target_product_id: targetProduct.id,
         }),
@@ -97,10 +97,10 @@ export default function AttackModal({
           amount: order.amount,
           currency: "INR",
           name: "InternetBillboard.space",
-          description: `Attack #${targetPosition} (${targetProduct.name})`,
+          description: `Take #${targetPosition} (${targetProduct.name})`,
           order_id: order.id,
           prefill: { email: user?.email || "" },
-          theme: { color: "#E85D27" },
+          theme: { color: "#111111" },
           handler: async (response: RazorpayPaymentResponse) => {
             const verifyRes = await fetch("/api/bids/verify", {
               method: "POST",
@@ -136,67 +136,67 @@ export default function AttackModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 animate-fade-in"
       onClick={(e) => e.target === e.currentTarget && onClose()}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Take position #${targetPosition}`}
     >
-      <div className="bg-[#111111] border border-[#2A2A2A] rounded-sm w-full max-w-md shadow-2xl shadow-black/60 animate-slide-in-right">
+      <div className="bg-bg border border-bg-border w-full max-w-sm shadow-xl animate-slide-in-right">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1A1A1A]">
-          <div className="flex items-center gap-2.5">
-            <Swords className="w-4 h-4 text-[#EF4444]" />
-            <div>
-              <h3 className="font-display font-semibold text-white text-sm">
-                Attack Position
-              </h3>
-              <p className="text-xs text-[#555555]">
-                Take #{targetPosition} from {targetProduct.name}
-              </p>
-            </div>
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-bg-border bg-bg-surface">
+          <div>
+            <p className="text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-0.5">
+              Competitive Move
+            </p>
+            <h3 className="font-display font-black text-base text-ink uppercase tracking-tight">
+              Take Position #{targetPosition}
+            </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-sm text-[#555555] hover:text-white hover:bg-[#1A1A1A] transition-all"
+            className="p-1.5 text-ink-muted hover:text-ink hover:bg-bg-elevated transition-all border border-transparent hover:border-bg-border"
+            aria-label="Close"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="p-5">
-          {/* Target info */}
-          <div className="flex items-center justify-between px-4 py-3 bg-[#181818] border border-[#242424] rounded-sm mb-5">
-            <div>
-              <p className="text-[10px] text-[#444444] uppercase tracking-wide mb-0.5">Target</p>
-              <p className="text-sm font-semibold text-white">
-                #{targetPosition} · {targetProduct.name}
+          {/* Target info card */}
+          <div className="flex items-center justify-between px-3.5 py-3 bg-bg-surface border border-bg-border mb-5">
+            <div className="min-w-0 flex-1 mr-3">
+              <p className="board-col-header mb-0.5">Currently Holding #{targetPosition}</p>
+              <p className="text-sm font-black text-ink uppercase tracking-wide truncate">
+                {targetProduct.name}
               </p>
-              <p className="text-xs text-[#666666] mt-0.5 truncate max-w-[200px]">
+              <p className="text-xs text-ink-muted mt-0.5 truncate max-w-[180px]">
                 {targetProduct.tagline}
               </p>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="text-[10px] text-[#444444] uppercase tracking-wide mb-0.5">
-                Current spend
-              </p>
-              <p className="text-sm font-bold text-[#D4A017] num">
-                {formatINR(targetSpend)}
+              <p className="board-col-header mb-0.5">Their Spend</p>
+              <p className="text-base font-black text-ink num">
+                {formatINR(targetSpend, true)}
               </p>
             </div>
           </div>
 
-          {/* Select product */}
+          {/* Step: Select product */}
           {step === "select_product" && (
             <div>
-              <p className="text-xs text-[#888888] mb-3">
-                Select which of your products will attack:
+              <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider mb-3">
+                Which product takes this position?
               </p>
               {userProducts.length === 0 ? (
-                <div className="text-center py-6 text-[#444444] text-xs">
-                  You need an active product on this board to attack.
-                  <br />
+                <div className="text-center py-6 border border-bg-border bg-bg-surface">
+                  <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider mb-3">
+                    You need an active product on the board to take a position.
+                  </p>
                   <a
                     href="/submit"
-                    className="text-[#E85D27] hover:text-[#D44E1E] underline mt-2 inline-block transition-colors"
+                    className="text-xs font-black text-ink uppercase tracking-wider underline underline-offset-2"
                   >
                     List your product →
                   </a>
@@ -207,18 +207,21 @@ export default function AttackModal({
                     <button
                       key={p.id}
                       onClick={() => setSelectedProductId(p.id)}
-                      className={`w-full flex items-center gap-3 p-3 border rounded-sm transition-all text-left ${
+                      className={`w-full flex items-center gap-3 p-3 border transition-all text-left ${
                         selectedProductId === p.id
-                          ? "border-[#E85D27] bg-[#E85D2710]"
-                          : "border-[#242424] bg-[#181818] hover:border-[#3A3A3A]"
+                          ? "border-ink bg-bg-elevated"
+                          : "border-bg-border bg-bg-surface hover:border-ink-muted"
                       }`}
                     >
-                      <div className="w-7 h-7 rounded bg-[#242424] flex items-center justify-center font-bold text-[#E85D27] text-xs flex-shrink-0">
+                      <div className="w-7 h-7 bg-bg-elevated border border-bg-border flex items-center justify-center font-black text-ink text-xs flex-shrink-0">
                         {p.name.charAt(0)}
                       </div>
-                      <span className="text-[#CCCCCC] text-sm font-medium">
+                      <span className="text-sm font-black text-ink uppercase tracking-wide">
                         {p.name}
                       </span>
+                      {selectedProductId === p.id && (
+                        <span className="ml-auto board-col-header">Selected</span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -226,88 +229,112 @@ export default function AttackModal({
               <button
                 onClick={() => selectedProductId && setStep("confirm")}
                 disabled={!selectedProductId}
-                className="w-full py-2.5 rounded-sm btn-primary text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full py-2.5 btn-primary text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Continue
+                Continue →
               </button>
             </div>
           )}
 
-          {/* Confirm */}
+          {/* Step: Confirm */}
           {step === "confirm" && (
             <div>
-              <div className="flex items-start gap-2.5 p-3 bg-[#1A1200] border border-[#3A2A00] rounded-sm mb-5">
-                <AlertTriangle className="w-4 h-4 text-[#D4A017] flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-[#AAAAAA]">
-                  You are about to spend{" "}
-                  <strong className="text-white">{formatINR(attackCost)}</strong> to take
-                  #{targetPosition}. This payment is non-refundable.
+              {/* Payment breakdown */}
+              <div className="border border-bg-border bg-bg-surface mb-4">
+                <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-bg-border">
+                  <span className="text-xs text-ink-muted font-semibold uppercase tracking-wider">Current position spend</span>
+                  <span className="text-sm font-black text-ink num">{formatINR(targetSpend, true)}</span>
+                </div>
+                <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-bg-border">
+                  <span className="text-xs text-ink-muted font-semibold uppercase tracking-wider">Minimum increment</span>
+                  <span className="text-sm font-bold text-ink num">+₹1</span>
+                </div>
+                <div className="flex items-center justify-between px-3.5 py-3">
+                  <span className="text-xs font-black text-ink uppercase tracking-wider">You pay</span>
+                  <span className="font-display font-black text-2xl text-ink num">
+                    {formatINR(takeCost)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2 p-3 bg-bg-surface border border-bg-border mb-4">
+                <AlertTriangle className="w-3.5 h-3.5 text-ink-muted flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-ink-muted leading-relaxed">
+                  This payment is <strong className="text-ink">non-refundable</strong>. Your position is secured immediately after payment is verified. Others can overtake you by spending more.
                 </p>
               </div>
 
-              <div className="flex items-center justify-between mb-5 py-3 border-t border-[#1A1A1A] border-b">
-                <span className="text-[#888888] text-sm">Cost to attack</span>
-                <span className="font-display font-bold text-2xl text-white num">
-                  {formatINR(attackCost)}
-                </span>
-              </div>
-
               <button
-                onClick={handleAttack}
-                className="w-full py-3 rounded-sm attack-btn text-sm font-bold flex items-center justify-center gap-2"
-                id="confirm-attack-btn"
+                onClick={handleTake}
+                className="w-full py-3 btn-primary text-sm font-black flex items-center justify-center gap-2"
+                id="confirm-take-btn"
               >
-                <Swords className="w-4 h-4" />
-                Take #{targetPosition} — {formatINR(attackCost)}
+                Pay {formatINR(takeCost)} · Take #{targetPosition}
               </button>
               <button
                 onClick={() =>
                   setStep(attackerProductId ? "confirm" : "select_product")
                 }
-                className="w-full mt-2 py-2 text-xs text-[#444444] hover:text-[#888888] transition-colors"
+                className="w-full mt-2 py-2 text-xs text-ink-muted hover:text-ink transition-colors font-bold uppercase tracking-wider"
               >
                 Cancel
               </button>
             </div>
           )}
 
-          {/* Paying */}
+          {/* Step: Paying */}
           {step === "paying" && (
-            <div className="text-center py-8">
-              <Loader2 className="w-8 h-8 animate-spin text-[#E85D27] mx-auto mb-3" />
-              <p className="text-[#CCCCCC] text-sm font-medium">Processing payment...</p>
-              <p className="text-[#555555] text-xs mt-1">
-                Complete the payment to attack the position
+            <div className="text-center py-10">
+              <Loader2 className="w-7 h-7 animate-spin text-ink mx-auto mb-3" />
+              <p className="text-sm font-black text-ink uppercase tracking-wide">Processing payment...</p>
+              <p className="text-xs text-ink-muted mt-1 font-semibold uppercase tracking-wider">
+                Complete the payment window to secure #{targetPosition}
               </p>
             </div>
           )}
 
-          {/* Success */}
+          {/* Step: Success */}
           {step === "success" && (
-            <div className="text-center py-8">
-              <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
-              <p className="text-white font-semibold">Attack successful!</p>
-              <p className="text-[#555555] text-xs mt-1">The board is updating...</p>
+            <div className="text-center py-10">
+              <CheckCircle2 className="w-10 h-10 text-accent-green mx-auto mb-3" />
+              <p className="font-display font-black text-xl text-ink uppercase tracking-tight">
+                Position Taken!
+              </p>
+              <p className="text-xs text-ink-muted mt-1.5 font-semibold uppercase tracking-widest">
+                #{targetPosition} is now yours. The board is updating...
+              </p>
             </div>
           )}
 
-          {/* Error */}
+          {/* Step: Error */}
           {step === "error" && (
             <div>
-              <div className="text-center py-4 mb-4">
-                <AlertTriangle className="w-8 h-8 text-[#EF4444] mx-auto mb-2" />
-                <p className="text-[#CCCCCC] text-sm font-medium">Payment failed</p>
-                <p className="text-[#555555] text-xs mt-1">{error}</p>
+              <div className="text-center py-6 mb-4">
+                <AlertTriangle className="w-8 h-8 text-accent-red mx-auto mb-2" />
+                <p className="text-sm font-black text-ink uppercase tracking-wide">Payment Failed</p>
+                <p className="text-xs text-ink-muted mt-1 font-semibold">{error}</p>
               </div>
               <button
                 onClick={() => setStep("confirm")}
-                className="w-full py-2.5 rounded-sm btn-secondary text-sm font-semibold"
+                className="w-full py-2.5 btn-secondary text-xs font-bold"
               >
                 Try Again
               </button>
             </div>
           )}
         </div>
+
+        {/* Footer note */}
+        {(step === "confirm" || step === "select_product") && (
+          <div className="px-5 py-3 border-t border-bg-border bg-bg-surface">
+            <p className="text-[10px] text-ink-muted font-semibold uppercase tracking-wider text-center">
+              Paid placement · Not a quality score ·{" "}
+              <a href="/how-it-works" className="underline underline-offset-2 hover:text-ink transition-colors">
+                How ranking works
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

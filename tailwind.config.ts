@@ -18,21 +18,20 @@ const config: Config = {
           border: "#D1CCC2",
         },
         ink: {
-          DEFAULT: "#111111", // near black ink
+          DEFAULT: "#111111", // near-black ink
           light: "#222222",
           lighter: "#444444",
-          muted: "#5A5A5A", // Better contrast against light bg
+          muted: "#5A5A5A",
         },
         accent: {
-          DEFAULT: "#E85D27", // keep subtle orange for rare accents if needed
-          hover: "#D44E1E",
-          dim: "#E85D2720",
+          DEFAULT: "#111111",  // primary is ink, not orange
+          hover: "#333333",
           // Semantic competition colors
-          green: "#059669", // muted green for up
+          green: "#059669",    // muted green for up movement
           "green-dim": "#05966915",
-          red: "#DC2626", // muted red for down
+          red: "#DC2626",      // muted red for down movement / live dot
           "red-dim": "#DC262615",
-          gold: "#B45309", 
+          gold: "#B45309",     // rank #1 gold
           "gold-dim": "#B4530915",
         },
         rank: {
@@ -47,24 +46,25 @@ const config: Config = {
         mono: ["'JetBrains Mono'", "'Fira Code'", "ui-monospace", "monospace"],
       },
       animation: {
-        "rank-up": "rankUp 0.5s ease-out",
-        "rank-down": "rankDown 0.5s ease-out",
-        "slide-in-right": "slideInRight 0.3s ease-out",
+        "rank-up": "rankUp 0.6s ease-out",
+        "rank-down": "rankDown 0.6s ease-out",
+        "slide-in-right": "slideInRight 0.25s ease-out",
         "slide-in-up": "slideInUp 0.3s ease-out",
         "fade-in": "fadeIn 0.2s ease-out",
         shimmer: "shimmer 1.5s linear infinite",
+        "entry": "entrySlide 0.3s ease-out",
       },
       keyframes: {
         rankUp: {
-          "0%": { backgroundColor: "#05966915", transform: "translateY(-1px)" },
+          "0%": { backgroundColor: "#05966920", transform: "translateY(-1px)" },
           "100%": { backgroundColor: "transparent", transform: "translateY(0)" },
         },
         rankDown: {
-          "0%": { backgroundColor: "#DC262615", transform: "translateY(1px)" },
+          "0%": { backgroundColor: "#DC262620", transform: "translateY(1px)" },
           "100%": { backgroundColor: "transparent", transform: "translateY(0)" },
         },
         slideInRight: {
-          "0%": { opacity: "0", transform: "translateX(8px)" },
+          "0%": { opacity: "0", transform: "translateX(6px)" },
           "100%": { opacity: "1", transform: "translateX(0)" },
         },
         slideInUp: {
@@ -78,6 +78,10 @@ const config: Config = {
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
+        },
+        entrySlide: {
+          "0%": { opacity: "0", transform: "translateY(-4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
     },

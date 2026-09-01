@@ -142,8 +142,8 @@ export default function ForFoundersPage() {
             <h3 className="text-sm font-black text-ink uppercase tracking-widest">Pricing</h3>
           </div>
           {[
-            ["Entry fee", "₹49 minimum to list and enter the board"],
-            ["Attention budget", "Your spend determines your rank. Start from ₹49."],
+            ["Entry fee", "₹29 minimum to list and enter the board"],
+            ["Attention budget", "Your spend determines your rank. Start from ₹29."],
             ["Overtake", "Pay ₹1 more than the product above you to move up"],
             ["No subscription", "Pay only when you choose to compete or defend"],
             ["No monthly fees", "Your listing stays active as long as you have budget"],
@@ -167,7 +167,7 @@ export default function ForFoundersPage() {
               Enter the board
             </h3>
             <p className="text-ink-muted text-xs font-bold uppercase tracking-wider">
-              ₹49 entry. Live immediately. No setup.
+              ₹29 entry. Live immediately. No setup.
             </p>
           </div>
           <div className="flex items-center gap-4">

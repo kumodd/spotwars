@@ -13,7 +13,7 @@ const steps = [
   {
     n: "01",
     title: "LIST",
-    body: "Put your product on the board. Submit your product profile with a ₹49 minimum entry. Your product goes live on the global board immediately.",
+    body: "Put your product on the board. Submit your product profile with a ₹29 minimum entry. Your product goes live on the global board immediately.",
   },
   {
     n: "02",
@@ -111,7 +111,7 @@ export default function HowItWorksPage() {
           <div>
             <h3 className="font-display font-black text-2xl text-ink uppercase tracking-tight mb-2">Ready to compete?</h3>
             <p className="text-ink-muted text-xs font-bold uppercase tracking-wider">
-              List your product for ₹49. Enter the board. Start climbing.
+              List your product for ₹29. Enter the board. Start climbing.
             </p>
           </div>
           <div className="flex items-center gap-4">

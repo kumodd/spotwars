@@ -71,7 +71,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} bg-bg text-ink antialiased pb-16`}>
+      <body className={`${inter.variable} ${playfair.variable} bg-bg text-ink antialiased pt-10`}>
         {children}
       </body>
     </html>
